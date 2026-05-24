@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  gflixnet-web:
+    container_name: gflixnet-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gflixnet:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - TZ=America/Sao_Paulo
+    
+    # Custom Labels for direct Docker dashboard compatibility
+    labels:
+      icon: "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/svg/jellyfin-icon-transparent.svg"
+      title: "Gflixnet Web"
+      tagline: "Gflixnet Player & APK Portal"
+      description: "Acesse seu Gflixnet através do navegador e faça o sideload do APK compilado diretamente em seus celulares ou TVs Android."
+      developer: "Gflixnet"
+      port_map: "8080"
+      index: "/"
+      category: "Media"
+
+# Standard x-casaos metadata block parsed by ZimaOS App Store engine when installing customized apps
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: gflixnet-web
+  author: "Gflixnet Team"
+  category: "Video"
+  icon: "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/svg/jellyfin-icon-transparent.svg"
+  index: /
+  port_map: "8080"
+  scheme: http
+  developer: "Gflixnet"
+  title:
+    en_us: "Gflixnet Web"
+    pt_br: "Gflixnet Web & APK Portal"
+  tagline:
+    en_us: "Cast and play your cinematic content directly from ZimaOS"
+    pt_br: "Seu cinema pessoal e sideload do app para Android no ZimaOS"
+  description:
+    en_us: "Access your Gflixnet and play back media using a premium cinematic interface. It also lets you download and sideload the mobile/TV Android APK directly onto your devices."
+    pt_br: "Acesse sua biblioteca do Gflixnet através do navegador com interface de cinema. Permite baixar e fazer o sideload do APK Android compilado em seus dispositivos móveis ou Smart TVs."
+

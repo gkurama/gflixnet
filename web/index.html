@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gflixnet Web - Seu Cinema Pessoal</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Upper Control Bar / Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="logo-text">
+                <span class="logo-g">g</span>flixnet
+            </div>
+            <span class="badge">ZimaOS Web</span>
+        </div>
+        
+        <div class="header-center">
+            <nav class="nav-links">
+                <a href="#" class="active" onclick="switchCategory('all')">Início</a>
+                <a href="#" onclick="switchCategory('Movie')">Filmes</a>
+                <a href="#" onclick="switchCategory('Series')">Séries</a>
+                <a href="#" onclick="switchCategory('Audio')">Música</a>
+            </nav>
+        </div>
+
+        <div class="header-right">
+            <!-- Sideload Button with high-contrast pulsing design -->
+            <a href="/Gflixnet.apk" class="download-apk-btn" download="Gflixnet.apk">
+                <i class="fa-solid fa-download"></i>
+                <span>Baixar para Android / TV</span>
+            </a>
+            
+            <button class="server-status" id="serverStatusBtn" onclick="openAuthModal()">
+                <div class="status-circle offline" id="statusIndicator"></div>
+                <span id="statusText">Desconectado</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="app-container">
+        <!-- Hero Dynamic Banner -->
+        <section class="hero-banner" id="heroBanner">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <span class="hero-tag"><i class="fa-solid fa-fire"></i> Destaque Cinevault</span>
+                <h1 class="hero-title" id="heroTitle">Selecione uma Mídia</h1>
+                <p class="hero-desc" id="heroDesc">Conecte seu servidor Jellyfin acima ou explore nosso modo de visualização interativa do Gflixnet.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" id="heroPlayBtn" onclick="playCurrentHero()"><i class="fa-solid fa-play"></i> Assistir Agora</button>
+                    <button class="btn btn-secondary" id="heroDetailBtn" onclick="showCurrentHeroDetails()"><i class="fa-solid fa-circle-info"></i> Mais Informações</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Media Sections -->
+        <div class="media-library" id="mediaLibrary">
+            <!-- Categories / Rows will be injected here by app.js -->
+            <div class="loading-state">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <p>Nenhuma mídia carregada. Conecte seu servidor Jellyfin para sincronizar automaticamente!</p>
+                <button class="btn btn-primary" style="margin-top: 15px;" onclick="openAuthModal()"><i class="fa-solid fa-plug"></i> Conectar Jellyfin</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Connection / Authentication Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content auth-box">
+            <button class="modal-close" onclick="closeModal('authModal')">&times;</button>
+            <div class="auth-header">
+                <div class="logo-text big-logo"><span class="logo-g">g</span>flixnet</div>
+                <h2>Conectar Servidor Jellyfin</h2>
+                <p>Sincronize automagicamente sua biblioteca pessoal de mídia, direto do seu ZimaOS ou servidor local.</p>
+            </div>
+            
+            <form id="authForm" onsubmit="handleAuthSubmit(event)">
+                <div class="input-group">
+                    <label for="serverUrl"><i class="fa-solid fa-server"></i> Endereço do Servidor</label>
+                    <input type="url" id="serverUrl" placeholder="ex: http://192.168.1.100:8096" required>
+                    <small>Dica: O IP local do seu Container Jellyfin no ZimaOS.</small>
+                </div>
+                
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="username"><i class="fa-solid fa-user"></i> Usuário</label>
+                        <input type="text" id="username" placeholder="Usuário Jellyfin" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password"><i class="fa-solid fa-lock"></i> Senha</label>
+                        <input type="password" id="password" placeholder="Sua senha">
+                    </div>
+                </div>
+
+                <div class="auth-footer-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="useDemoMode()">Modo de Demonstração</button>
+                    <button type="submit" class="btn btn-primary" id="loginBtn">Conectar Conta <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Media Detail Popover Modal -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content detail-container">
+            <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
+            <div class="detail-backdrop" id="detailBackdrop">
+                <div class="detail-backdrop-overlay"></div>
+            </div>
+            <div class="detail-layout">
+                <div class="detail-info-pane">
+                    <span class="detail-badge" id="detailType">Filme</span>
+                    <h2 class="detail-title" id="detailTitleText">Título da Mídia</h2>
+                    <div class="detail-meta">
+                        <span id="detailYear"><i class="fa-regular fa-calendar"></i> 2024</span>
+                        <span id="detailDuration"><i class="fa-regular fa-clock"></i> N/A</span>
+                        <span id="detailRating" class="rating-badge">Livre</span>
+                    </div>
+                    
+                    <p class="detail-synopsis" id="detailSynopsisText">
+                        Resumo ou sinopse do conteúdo de mídia selecionado.
+                    </p>
+
+                    <!-- Technical metadata boxes -->
+                    <div class="technical-metadata">
+                        <div class="tech-item">
+                            <span class="tech-label">Diretor</span>
+                            <span class="tech-value" id="detailDirector">N/A</span>
+                        </div>
+                        <div class="tech-item">
+                            <span class="tech-label">Roteiro</span>
+                            <span class="tech-value" id="detailWriters">N/A</span>
+                        </div>
+                        <div class="tech-item">
+                            <span class="tech-label">Gênero</span>
+                            <span class="tech-value" id="detailGenres">N/A</span>
+                        </div>
+                        <div class="tech-item" id="musicAlbumContainer" style="display:none;">
+                            <span class="tech-label">Álbum</span>
+                            <span class="tech-value" id="detailAlbum">N/A</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-actions">
+                        <button class="btn btn-primary btn-large" id="detailPlayBtn"><i class="fa-solid fa-play"></i> Reproduzir Agora</button>
+                        <button class="btn btn-secondary" id="detailFavoriteBtn"><i class="fa-regular fa-heart"></i> Favoritar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Video Stream Player Modal -->
+    <div class="modal" id="playerModal">
+        <div class="modal-content player-box">
+            <button class="modal-close player-close" onclick="closePlayerModal()">&times;</button>
+            <div class="video-container">
+                <video id="mediaVideoPlayer" controls autoplay></video>
+                <div class="player-loader" id="playerLoader">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Iniciando transmissão...</p>
+                </div>
+            </div>
+            <div class="player-info-footer">
+                <h4 id="playerFooterTitle">Media Title</h4>
+                <p id="playerFooterSubtitle">Gflixnet Premium Video Engine</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Audio Stream Player Footer -->
+    <div class="audio-player-bar" id="audioPlayerBar" style="display: none;">
+        <div class="audio-left">
+            <div class="audio-disc" id="audioDisc">
+                <i class="fa-solid fa-music"></i>
+            </div>
+            <div class="audio-info">
+                <div class="audio-title" id="audioTitle">Nome da Música</div>
+                <div class="audio-artist" id="audioArtist">Artista</div>
+            </div>
+        </div>
+        
+        <div class="audio-center">
+            <button class="audio-ctrl" onclick="toggleAudio()"><i class="fa-solid fa-play" id="audioPlayIcon"></i></button>
+            <audio id="audioInstance"></audio>
+        </div>
+
+        <div class="audio-right">
+            <button class="btn btn-secondary btn-small" onclick="closeAudioPlayer()"><i class="fa-solid fa-xmark"></i> Fechar</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

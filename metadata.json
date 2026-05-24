@@ -1,0 +1,8 @@
+{
+  "name": "Gflixnet",
+  "description": "Seu centro de mídia pessoal para assistir a filmes e séries com visual cinematográfico e moderno.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
