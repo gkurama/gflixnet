@@ -123,51 +123,8 @@
 
     <!-- Media Detail Popover Modal -->
     <div class="modal" id="detailModal">
-        <div class="modal-content detail-container">
-            <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
-            <div class="detail-backdrop" id="detailBackdrop">
-                <div class="detail-backdrop-overlay"></div>
-            </div>
-            <div class="detail-layout">
-                <div class="detail-info-pane">
-                    <span class="detail-badge" id="detailType">Filme</span>
-                    <h2 class="detail-title" id="detailTitleText">Título da Mídia</h2>
-                    <div class="detail-meta">
-                        <span id="detailYear"><i class="fa-regular fa-calendar"></i> 2024</span>
-                        <span id="detailDuration"><i class="fa-regular fa-clock"></i> N/A</span>
-                        <span id="detailRating" class="rating-badge">Livre</span>
-                    </div>
-                    
-                    <p class="detail-synopsis" id="detailSynopsisText">
-                        Resumo ou sinopse do conteúdo de mídia selecionado.
-                    </p>
-
-                    <!-- Technical metadata boxes -->
-                    <div class="technical-metadata">
-                        <div class="tech-item">
-                            <span class="tech-label">Diretor</span>
-                            <span class="tech-value" id="detailDirector">N/A</span>
-                        </div>
-                        <div class="tech-item">
-                            <span class="tech-label">Roteiro</span>
-                            <span class="tech-value" id="detailWriters">N/A</span>
-                        </div>
-                        <div class="tech-item">
-                            <span class="tech-label">Gênero</span>
-                            <span class="tech-value" id="detailGenres">N/A</span>
-                        </div>
-                        <div class="tech-item" id="musicAlbumContainer" style="display:none;">
-                            <span class="tech-label">Álbum</span>
-                            <span class="tech-value" id="detailAlbum">N/A</span>
-                        </div>
-                    </div>
-
-                    <div class="detail-actions">
-                        <button class="btn btn-primary btn-large" id="detailPlayBtn"><i class="fa-solid fa-play"></i> Reproduzir Agora</button>
-                        <button class="btn btn-secondary" id="detailFavoriteBtn"><i class="fa-regular fa-heart"></i> Favoritar</button>
-                    </div>
-                </div>
-            </div>
+        <div class="modal-content detail-container" id="detailModalContent">
+            <!-- Dynamic APK layouts and Episode list loaded by app.js -->
         </div>
     </div>
 

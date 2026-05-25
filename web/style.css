@@ -542,107 +542,424 @@ body {
     flex: 1;
 }
 
-/* Detail Popover Window */
+/* Detail Popover Window - Styled exactly like the Android TV/Mobile APK */
 .detail-container {
     width: 100%;
-    max-width: 850px;
+    max-width: 600px; /* Standard portrait mobile layout to match the images */
+    background-color: #08080C;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.08); /* Clean dark look */
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
 }
 
-.detail-backdrop {
-    height: 250px;
-    position: relative;
+.apk-back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #E50914; /* Red back button circular container matching the screenshot! */
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 100;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* For Season view, back arrow is Cyan in the screens */
+.apk-back-btn.cyan-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    color: var(--primary-cyan);
+}
+
+.apk-back-btn:hover {
+    transform: scale(1.1);
+}
+
+.apk-banner {
+    height: 240px;
+    width: 100%;
     background-size: cover;
     background-position: center;
+    position: relative;
+    flex-shrink: 0;
 }
 
-.detail-backdrop-overlay {
+.apk-banner-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, #0E0E14, rgba(14, 14, 20, 0.2));
+    background: linear-gradient(to bottom, rgba(8, 8, 12, 0.2) 0%, rgba(8, 8, 12, 0.7) 60%, #08080C 100%);
 }
 
-.detail-layout {
-    padding: 32px;
-}
-
-.detail-badge {
-    background: rgba(0, 210, 255, 0.1);
-    color: var(--primary-cyan);
-    border: 1px solid rgba(0, 210, 255, 0.2);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    display: inline-block;
-    margin-bottom: 12px;
-}
-
-.detail-title {
-    font-size: 32px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    margin-bottom: 12px;
-}
-
-.detail-meta {
+.apk-banner-play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(8, 8, 12, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.apk-banner-play-overlay:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: rgba(0, 210, 255, 0.2);
+    border-color: var(--primary-cyan);
+}
+
+.apk-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
+}
+
+.apk-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+    margin-top: -10px;
+}
+
+.apk-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 13px;
     color: var(--text-muted);
-    margin-bottom: 20px;
 }
 
-.detail-meta i {
+.apk-meta-type {
     color: var(--primary-cyan);
+    font-weight: 700;
 }
 
-.rating-badge {
-    border: 1px solid var(--glass-border);
-    padding: 1px 6px;
+.rating-badge-green {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    padding: 2px 8px;
     border-radius: 4px;
     font-size: 11px;
+    font-weight: 700;
 }
 
-.detail-synopsis {
+/* Action Buttons Grid */
+.apk-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 8px 0;
+}
+
+.apk-action-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.apk-action-circle.play {
+    background: white;
+    color: black;
+    border: none;
+    font-size: 16px;
+}
+
+.apk-action-circle:hover {
+    transform: scale(1.08);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.apk-action-circle.play:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.apk-tags-row {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.apk-tags-row strong {
+    color: #888899;
+    margin-right: 4px;
+}
+
+.apk-synopsis {
     font-size: 14px;
-    color: #CCCCE0;
-    line-height: 1.6;
-    margin-bottom: 24px;
+    color: #CCCCD5;
+    line-height: 1.5;
+    margin-bottom: 8px;
 }
 
-.technical-metadata {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 16px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--glass-border);
+/* Section Titles Mapping APK */
+.apk-section-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+    margin-top: 8px;
+    border-left: 3px solid var(--primary-cyan);
+    padding-left: 8px;
+}
+
+/* Next Up (A Seguir) Card */
+.apk-aseguir-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 30px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
 }
 
-.tech-item {
+.apk-aseguir-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 210, 255, 0.3);
+}
+
+.apk-aseguir-thumb-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    background: #111;
+}
+
+.apk-aseguir-thumb-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.apk-aseguir-play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.4);
+    font-size: 24px;
+    color: white;
+    opacity: 0.85;
+    transition: opacity 0.2s, font-size 0.2s;
+}
+
+.apk-aseguir-card:hover .apk-aseguir-play-overlay {
+    opacity: 1;
+    font-size: 28px;
+}
+
+.apk-aseguir-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Seasons List (Temporadas Row) */
+.apk-seasons-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.apk-season-card {
+    min-width: 110px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.apk-season-card:hover {
+    background: rgba(0, 210, 255, 0.08);
+    border-color: var(--primary-cyan);
+    transform: translateY(-3px);
+}
+
+.apk-season-card .num-indicator {
+    display: block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary-cyan);
+    color: black;
+    font-weight: 800;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px auto;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+.apk-season-card .season-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+}
+
+.apk-season-card .season-eps-count {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    display: block;
+}
+
+/* Season View Styling inside Popover */
+.apk-season-view-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 50px; /* Spacer for the absolute back button */
+}
+
+.apk-season-series-title {
+    font-size: 14px;
+    color: var(--primary-cyan);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.apk-season-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+}
+
+.apk-episodes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.apk-episode-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 10px;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.apk-episode-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 210, 255, 0.2);
+}
+
+.apk-episode-thumb {
+    width: 100px;
+    aspect-ratio: 16/9;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background: #151520;
+    flex-shrink: 0;
+}
+
+.apk-episode-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.apk-episode-thumb .play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    opacity: 0.8;
+    transition: opacity 0.2s, font-size 0.2s;
+}
+
+.apk-episode-item:hover .play-overlay {
+    opacity: 1;
+    font-size: 16px;
+}
+
+.apk-episode-info {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.tech-label {
+.apk-episode-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.apk-episode-duration {
     font-size: 11px;
     color: var(--text-muted);
-    text-transform: uppercase;
-    font-weight: 700;
 }
 
-.tech-value {
-    font-size: 13px;
-    font-weight: 600;
-    color: white;
+.apk-episode-info-icon {
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 14px;
+    margin-right: 8px;
+    transition: color 0.2s;
 }
 
-.detail-actions {
-    display: flex;
-    gap: 12px;
+.apk-episode-item:hover .apk-episode-info-icon {
+    color: var(--primary-cyan);
 }
 
 /* Custom Video Stream Player */

@@ -447,40 +447,293 @@ window.openMediaDetail = function(encodedItem) {
     showDetailsHTML(decoded);
 };
 
-function showDetailsHTML(item) {
-    currentSelectedMedia = item;
+// Dynamic APK detail and Episode/Season lists layout mirroring
+let currentEpisodes = [];
 
-    document.getElementById('detailTitleText').innerText = item.title;
-    document.getElementById('detailYear').innerHTML = `<i class="fa-regular fa-calendar"></i> ${item.year}`;
-    document.getElementById('detailDuration').innerHTML = `<i class="fa-regular fa-clock"></i> ${item.runtime}`;
-    document.getElementById('detailType').innerText = item.detailsSubtitle || "Mídia";
-    document.getElementById('detailRating').innerText = item.rating;
-    document.getElementById('detailSynopsisText').innerText = item.synopsis;
-
-    document.getElementById('detailDirector').innerText = item.director || "N/A";
-    document.getElementById('detailWriters').innerText = item.writers || "N/A";
-    document.getElementById('detailGenres').innerText = item.genres || "N/A";
-
-    // Extra dynamic details
-    const musicContainer = document.getElementById('musicAlbumContainer');
-    if (item.type === 'Audio') {
-        musicContainer.style.display = 'block';
-        document.getElementById('detailAlbum').innerText = item.album || "Gflixnet Wave";
-    } else {
-        musicContainer.style.display = 'none';
+async function fetchEpisodesForSeries(seriesId) {
+    if (isDemoMode) {
+        // Mock episodes styled matching Tojima Wants to Be a Kamen Rider S01
+        return [
+            { id: "demo_ep1", name: "O Despertar de Tojima", episodeNumber: 1, seasonNumber: 1, duration: "23m", thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Big_Buck_Bunny_Screen_01.png", streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
+            { id: "demo_ep2", name: "Treinamento Intensivo", episodeNumber: 2, seasonNumber: 1, duration: "24m", thumbnailUrl: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600", streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" },
+            { id: "demo_ep3", name: "A Chegada de Babi", episodeNumber: 3, seasonNumber: 1, duration: "23m", thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Sintel_poster.jpg/800px-Sintel_poster.jpg", streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" },
+            { id: "demo_ep4", name: "Ameaça Cibernética", episodeNumber: 4, seasonNumber: 1, duration: "22m", thumbnailUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600", streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
+            { id: "demo_ep5", name: "Kamen Rider para Sempre", episodeNumber: 5, seasonNumber: 1, duration: "26m", thumbnailUrl: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200", streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" }
+        ];
     }
 
-    // Modal background image
-    document.getElementById('detailBackdrop').style.backgroundImage = `url('${item.backdropUrl}')`;
+    const authHeader = `MediaBrowser Client="Gflixnet", Device="WebBrowser", DeviceId="gflixnet_web_client", Version="1.0.0", Token="${currentToken}"`;
+    try {
+        const response = await fetch(`${currentServerUrl}/Shows/${seriesId}/Episodes?userId=${currentUserId}`, {
+            headers: {
+                'X-Emby-Authorization': authHeader
+            }
+        });
+        if (!response.ok) throw new Error("Could not load episodes");
+        const data = await response.json();
+        return data.Items.map(ep => {
+            let durationStr = "N/A";
+            if (ep.RunTimeTicks) {
+                const totalSeconds = Math.floor(ep.RunTimeTicks / 10000000);
+                const minutes = Math.floor(totalSeconds / 60);
+                durationStr = `${minutes}m`;
+            }
+            const thumbUrl = ep.ImageTags && ep.ImageTags.Primary
+                ? `${currentServerUrl}/Items/${ep.Id}/Images/Primary`
+                : (currentSelectedMedia ? currentSelectedMedia.backdropUrl : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600');
+            
+            return {
+                id: ep.Id,
+                name: ep.Name || `Episódio ${ep.IndexNumber || ''}`,
+                episodeNumber: ep.IndexNumber || 1,
+                seasonNumber: ep.ParentIndexNumber || 1,
+                duration: durationStr,
+                thumbnailUrl: thumbUrl,
+                streamUrl: `${currentServerUrl}/Videos/${ep.Id}/stream?static=true&api_key=${currentToken}`
+            };
+        });
+    } catch (e) {
+        console.error("Error fetching Jellyfin episodes:", e);
+        return [];
+    }
+}
 
-    // Connect Play button
-    document.getElementById('detailPlayBtn').onclick = () => {
+function renderMainDetailView(item, episodesList = []) {
+    const isSeries = item.isSeries === true;
+    
+    let playActionJs = isSeries 
+        ? `window.playEpisodeDirectlyFromList(0)` 
+        : `window.playMainMedia()`;
+
+    let html = `
+        <button class="apk-back-btn" onclick="closeModal('detailModal')"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="apk-banner" style="background-image: url('${item.backdropUrl}')">
+            <div class="apk-banner-overlay"></div>
+            <div class="apk-banner-play-overlay" onclick="${playActionJs}">
+                <i class="fa-solid fa-play"></i>
+            </div>
+        </div>
+        <div class="apk-body">
+            <h2 class="apk-title">${item.title}</h2>
+            <div class="apk-meta">
+                <span class="apk-meta-type">${item.detailsSubtitle}</span>
+                <span>&bull;</span>
+                <span>${item.year}</span>
+                <span>&bull;</span>
+                <span class="rating-badge-green">${item.rating}</span>
+            </div>
+            
+            <div class="apk-actions-row">
+                <button class="apk-action-circle play" onclick="${playActionJs}"><i class="fa-solid fa-play"></i></button>
+                <button class="apk-action-circle" onclick="${isSeries ? 'window.shuffleEpisodes()' : 'window.playMainMedia()'}"><i class="fa-solid fa-shuffle"></i></button>
+                <button class="apk-action-circle"><i class="fa-solid fa-check"></i></button>
+                <button class="apk-action-circle" onclick="window.toggleFavoriteSelected()"><i class="fa-regular fa-heart" id="apkFavoriteIcon"></i></button>
+                <button class="apk-action-circle"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            </div>
+            
+            <div class="apk-tags-row">
+                <strong>Etiquetas:</strong> <span>${item.genres}, Jellyfin, Streaming</span>
+            </div>
+            
+            <p class="apk-synopsis">${item.synopsis}</p>
+    `;
+
+    if (isSeries) {
+        if (episodesList.length === 0) {
+            // Loading element
+            html += `
+                <div class="apk-section-title">Temporadas</div>
+                <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 24px; color: var(--primary-cyan); margin-bottom: 10px;"></i>
+                    <p style="font-size: 13px;">Sincronizando temporadas e episódios do Jellyfin...</p>
+                </div>
+            `;
+        } else {
+            // "A seguir" section
+            const firstEp = episodesList[0];
+            html += `
+                <div class="apk-section-title">A seguir</div>
+                <div class="apk-aseguir-card" onclick="window.playEpisodeDirectlyFromList(0)">
+                    <div class="apk-aseguir-thumb-container">
+                        <img src="${firstEp.thumbnailUrl}" />
+                        <div class="apk-aseguir-play-overlay">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="apk-aseguir-title">S${firstEp.seasonNumber}:E${firstEp.episodeNumber} - ${firstEp.name}</div>
+                </div>
+                
+                <div class="apk-section-title">Temporadas</div>
+                <div class="apk-seasons-row">
+            `;
+            
+            // Group episodes by season
+            const seasonsMap = {};
+            episodesList.forEach(ep => {
+                if (!seasonsMap[ep.seasonNumber]) {
+                    seasonsMap[ep.seasonNumber] = [];
+                }
+                seasonsMap[ep.seasonNumber].push(ep);
+            });
+            
+            const sortedSeasonNums = Object.keys(seasonsMap).map(Number).sort((a,b) => a - b);
+            sortedSeasonNums.forEach(seasonNum => {
+                const epsCount = seasonsMap[seasonNum].length;
+                html += `
+                    <div class="apk-season-card" onclick="window.openSeasonView(${seasonNum})">
+                        <span class="num-indicator">${seasonNum}</span>
+                        <span class="season-name">Temporada ${seasonNum}</span>
+                        <span class="season-eps-count">${epsCount} episódios</span>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+        }
+    }
+
+    html += `</div>`; // Close apk-body
+    document.getElementById('detailModalContent').innerHTML = html;
+}
+
+window.openSeasonView = function(seasonNumber) {
+    if (!currentSelectedMedia) return;
+    
+    const seasonEps = currentEpisodes.filter(ep => ep.seasonNumber === seasonNumber);
+    
+    let html = `
+        <button class="apk-back-btn cyan-btn" onclick="window.restoreMainDetailView()"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="apk-body">
+            <div class="apk-season-view-header">
+                <span class="apk-season-series-title">${currentSelectedMedia.title}</span>
+                <h2 class="apk-season-title">Temporada ${seasonNumber}</h2>
+            </div>
+            
+            <div class="apk-actions-row">
+                <button class="apk-action-circle play" onclick="window.playEpisodeFromSeason(${seasonNumber}, 0)"><i class="fa-solid fa-play"></i></button>
+                <button class="apk-action-circle" onclick="window.shuffleSeasonEpisodes(${seasonNumber})"><i class="fa-solid fa-shuffle"></i></button>
+            </div>
+            
+            <div class="apk-episodes-list">
+    `;
+    
+    seasonEps.forEach((ep, idx) => {
+        html += `
+            <div class="apk-episode-item" onclick="window.playEpisodeFromSeason(${seasonNumber}, ${idx})">
+                <div class="apk-episode-thumb">
+                    <img src="${ep.thumbnailUrl}" />
+                    <div class="play-overlay">
+                        <i class="fa-solid fa-play"></i>
+                    </div>
+                </div>
+                <div class="apk-episode-info">
+                    <span class="apk-episode-name">${ep.episodeNumber}. ${ep.name}</span>
+                    <span class="apk-episode-duration">${ep.duration}</span>
+                </div>
+                <i class="fa-solid fa-circle-info apk-episode-info-icon"></i>
+            </div>
+        `;
+    });
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('detailModalContent').innerHTML = html;
+};
+
+window.restoreMainDetailView = function() {
+    if (currentSelectedMedia) {
+        renderMainDetailView(currentSelectedMedia, currentEpisodes);
+    }
+};
+
+window.playMainMedia = function() {
+    if (currentSelectedMedia) {
         closeModal('detailModal');
-        startStreamPlayer(item);
-    };
+        startStreamPlayer(currentSelectedMedia);
+    }
+};
 
-    // Open detailed popover
+window.playEpisodeDirectlyFromList = function(index) {
+    if (currentEpisodes && currentEpisodes[index]) {
+        closeModal('detailModal');
+        const ep = currentEpisodes[index];
+        startStreamPlayer({
+            title: `S${ep.seasonNumber}:E${ep.episodeNumber} - ${ep.name}`,
+            detailsSubtitle: `Temporada ${ep.seasonNumber} • Episódio ${ep.episodeNumber}`,
+            genres: currentSelectedMedia ? currentSelectedMedia.genres : "Série de TV",
+            streamUrl: ep.streamUrl,
+            type: "Video"
+        });
+    }
+};
+
+window.playEpisodeFromSeason = function(seasonNumber, index) {
+    const seasonEps = currentEpisodes.filter(ep => ep.seasonNumber === seasonNumber);
+    const ep = seasonEps[index];
+    if (ep) {
+        closeModal('detailModal');
+        startStreamPlayer({
+            title: `S${ep.seasonNumber}:E${ep.episodeNumber} - ${ep.name}`,
+            detailsSubtitle: `Temporada ${ep.seasonNumber} • Episódio ${ep.episodeNumber}`,
+            genres: currentSelectedMedia ? currentSelectedMedia.genres : "Série de TV",
+            streamUrl: ep.streamUrl,
+            type: "Video"
+        });
+    }
+};
+
+window.shuffleEpisodes = function() {
+    if (currentEpisodes.length > 0) {
+        const randIndex = Math.floor(Math.random() * currentEpisodes.length);
+        window.playEpisodeDirectlyFromList(randIndex);
+    }
+};
+
+window.shuffleSeasonEpisodes = function(seasonNumber) {
+    const seasonEps = currentEpisodes.filter(ep => ep.seasonNumber === seasonNumber);
+    if (seasonEps.length > 0) {
+        const randIndex = Math.floor(Math.random() * seasonEps.length);
+        const ep = seasonEps[randIndex];
+        const globalIndex = currentEpisodes.indexOf(ep);
+        if (globalIndex !== -1) {
+            window.playEpisodeDirectlyFromList(globalIndex);
+        }
+    }
+};
+
+window.toggleFavoriteSelected = function() {
+    const icon = document.getElementById('apkFavoriteIcon');
+    if (!icon) return;
+    if (icon.classList.contains('fa-regular')) {
+        icon.className = 'fa-solid fa-heart';
+        icon.style.color = '#E50914';
+    } else {
+        icon.className = 'fa-regular fa-heart';
+        icon.style.color = 'white';
+    }
+};
+
+async function showDetailsHTML(item) {
+    currentSelectedMedia = item;
+    currentEpisodes = []; // Reset old chapters list
+
+    // Render loading background and base metadata structure
+    renderMainDetailView(item, []);
+
+    // Open popover modal right away
     document.getElementById('detailModal').classList.add('active');
+
+    if (item.isSeries === true) {
+        // Fetch real episodes in parallel matching the APK layout
+        const episodes = await fetchEpisodesForSeries(item.id);
+        currentEpisodes = episodes;
+        
+        // Re-paint to render "A seguir" and Season pills
+        renderMainDetailView(item, episodes);
+    }
 }
 
 // Media Playbacks
