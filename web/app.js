@@ -92,7 +92,7 @@ const demoMediaData = [
         libraryName: "Músicas",
         posterUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600",
         backdropUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600",
-        streamUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+        streamUrl: "https://commondatastorage.googleapis.com/codeskulptor-demos/DinoandRose/rose_song.mp3"
     }
 ];
 
@@ -518,7 +518,15 @@ function openVideoOverlay(item) {
         closePlayerModal();
     };
 
-    video.play();
+    // Handle play promise correctly to prevent UI locks on browser safety blockages
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log("Video started playing successfully.");
+        }).catch(err => {
+            console.warn("Autoplay blocked or required interaction. Clicking play explicitly helps.", err);
+        });
+    }
 }
 
 window.closePlayerModal = function() {
@@ -529,11 +537,15 @@ window.closePlayerModal = function() {
 };
 
 // Music/Audio Playbacks
+let audioIsMuted = false;
+let savedAudioVolume = 100;
+
 function playAudioDirectly(item) {
     const audioBar = document.getElementById('audioPlayerBar');
     const audioInstance = document.getElementById('audioInstance');
     const playIcon = document.getElementById('audioPlayIcon');
     const disc = document.getElementById('audioDisc');
+    const volumeSlider = document.getElementById('audioVolumeSlider');
 
     document.getElementById('audioTitle').innerText = item.title;
     document.getElementById('audioArtist').innerText = item.director || "Retro Beats";
@@ -541,6 +553,14 @@ function playAudioDirectly(item) {
     audioBar.style.display = 'flex';
     audioInstance.src = item.streamUrl;
     
+    // Explicitly configure values
+    audioInstance.muted = audioIsMuted;
+    audioInstance.volume = savedAudioVolume / 100;
+    if (volumeSlider) {
+        volumeSlider.value = savedAudioVolume;
+    }
+    updateVolumeIcon(savedAudioVolume);
+
     audioInstance.onplay = () => {
         playIcon.className = 'fa-solid fa-pause';
         disc.classList.add('playing');
@@ -551,13 +571,81 @@ function playAudioDirectly(item) {
         disc.classList.remove('playing');
     };
 
-    audioInstance.play();
+    audioInstance.onerror = (e) => {
+        console.error("Audio stream playback failed:", e);
+        alert("Não foi possível decodificar ou carregar esta faixa de áudio. Verifique se o servidor Jellyfin está respondendo normalmente ou se ela necessita de transcodificação de codec específico.");
+    };
+
+    // Modern browser autoplay prevention safe wrapper
+    const audioPromise = audioInstance.play();
+    if (audioPromise !== undefined) {
+        audioPromise.then(() => {
+            console.log("Audio playing unmuted successfully!");
+        }).catch(err => {
+            console.warn("Autoplay block detected on music stream. Falling back to paused state waiting for press.", err);
+            playIcon.className = 'fa-solid fa-play';
+            disc.classList.remove('playing');
+        });
+    }
+}
+
+window.toggleMuteAudio = function() {
+    const audioInstance = document.getElementById('audioInstance');
+    if (!audioInstance) return;
+
+    audioIsMuted = !audioIsMuted;
+    audioInstance.muted = audioIsMuted;
+
+    const volumeSlider = document.getElementById('audioVolumeSlider');
+    if (audioIsMuted) {
+        if (volumeSlider) volumeSlider.value = 0;
+        updateVolumeIcon(0);
+    } else {
+        if (volumeSlider) volumeSlider.value = savedAudioVolume;
+        updateVolumeIcon(savedAudioVolume);
+    }
+};
+
+window.changeAudioVolume = function(value) {
+    const audioInstance = document.getElementById('audioInstance');
+    if (!audioInstance) return;
+
+    const vol = parseInt(value, 10);
+    savedAudioVolume = vol;
+    audioInstance.volume = vol / 100;
+
+    if (vol === 0) {
+        audioIsMuted = true;
+        audioInstance.muted = true;
+    } else {
+        audioIsMuted = false;
+        audioInstance.muted = false;
+    }
+    updateVolumeIcon(vol);
+};
+
+function updateVolumeIcon(vol) {
+    const icon = document.getElementById('audioVolumeIcon');
+    if (!icon) return;
+
+    if (audioIsMuted || vol === 0) {
+        icon.className = 'fa-solid fa-volume-xmark';
+    } else if (vol < 40) {
+        icon.className = 'fa-solid fa-volume-low';
+    } else {
+        icon.className = 'fa-solid fa-volume-high';
+    }
 }
 
 window.toggleAudio = function() {
     const audioInstance = document.getElementById('audioInstance');
     if (audioInstance.paused) {
-        audioInstance.play();
+        const playPromise = audioInstance.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(err => {
+                console.error("Manual audio trigger failed:", err);
+            });
+        }
     } else {
         audioInstance.pause();
     }

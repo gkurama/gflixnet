@@ -207,6 +207,13 @@
         </div>
 
         <div class="audio-right">
+            <!-- Modern Volume & Mute Control -->
+            <div class="audio-volume-control">
+                <button class="volume-btn" id="audioVolumeBtn" onclick="toggleMuteAudio()">
+                    <i class="fa-solid fa-volume-high" id="audioVolumeIcon"></i>
+                </button>
+                <input type="range" id="audioVolumeSlider" class="volume-slider" min="0" max="100" value="100" oninput="changeAudioVolume(this.value)">
+            </div>
             <button class="btn btn-secondary btn-small" onclick="closeAudioPlayer()"><i class="fa-solid fa-xmark"></i> Fechar</button>
         </div>
     </div>
