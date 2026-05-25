@@ -272,7 +272,7 @@ async function fetchAndRenderJellyfinLibrary() {
                 : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200';
 
             const streamUrl = isAudio 
-                ? `${currentServerUrl}/Audio/${item.Id}/stream?api_key=${currentToken}`
+                ? `${currentServerUrl}/Audio/${item.Id}/stream?static=true&api_key=${currentToken}`
                 : `${currentServerUrl}/Videos/${item.Id}/stream?static=true&api_key=${currentToken}`;
 
             return {
@@ -282,7 +282,7 @@ async function fetchAndRenderJellyfinLibrary() {
                 runtime: runtimeString,
                 isSeries: isSeries,
                 type: item.Type,
-                detailsSubtitle: isAudio ? "Musica" : (isSeries ? "Série de TV" : "Filme"),
+                detailsSubtitle: isAudio ? "Música" : (isSeries ? "Série de TV" : "Filme"),
                 rating: item.OfficialRating || "Livre",
                 genres: item.Genres ? item.Genres.join(", ") : "Geral",
                 tags: isAudio ? "Jellyfin Audio" : "Jellyfin 1080p",
