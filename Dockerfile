@@ -12,15 +12,12 @@ WORKDIR /usr/share/nginx/html
 # Remove arquivos padrões do Nginx
 RUN rm -rf ./*
 
-# Copia a interface Web responsiva do Gflixnet
+# Copia a interface Web responsiva do Gflixnet e o APK Android
 COPY web/index.html .
 COPY web/style.css .
 COPY web/app.js .
 COPY web/manifest.json .
-
-# Copia o APK Android já compilado de forma limpa pelo Gradle (assembleDebug)
-# Isso torna a criação da imagem Docker extremamente leve e rápida no ZimaOS (sem precisar compilar o Android SDK na CPU do NAS)
-COPY app/build/outputs/apk/debug/app-debug.apk ./Gflixnet.apk
+COPY web/Gflixnet.apk ./Gflixnet.apk
 
 # Expõe a porta padrão para a Web
 EXPOSE 80

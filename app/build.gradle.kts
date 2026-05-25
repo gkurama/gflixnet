@@ -65,8 +65,17 @@ tasks.register<CopyLauncherIconsTask>("copyLauncherIcons") {
     })
 }
 
+tasks.register<CopyApkToWebTask>("copyApkToWeb") {
+    sourceApkPaths.set(listOf(
+        "${projectDir.absolutePath}/build/outputs/apk/debug/app-debug.apk",
+        "${rootDir.absolutePath}/.build-outputs/app-debug.apk"
+    ))
+    destApkPath.set("${rootDir.absolutePath}/web/Gflixnet.apk")
+}
+
 tasks.named("preBuild") {
     dependsOn("copyLauncherIcons")
+    dependsOn("copyApkToWeb")
 }
 
 // Configure the Secrets Gradle Plugin to use .env and .env.example files
@@ -151,6 +160,34 @@ abstract class CopyLauncherIconsTask @javax.inject.Inject constructor() : Defaul
                 src.copyTo(File(destDir, "ic_launcher_round.png"), overwrite = true)
             }
             println("Launcher icons copied successfully to mipmap folders!")
+        }
+    }
+}
+
+abstract class CopyApkToWebTask @javax.inject.Inject constructor() : DefaultTask() {
+    @get:Input
+    abstract val sourceApkPaths: ListProperty<String>
+
+    @get:Input
+    abstract val destApkPath: Property<String>
+
+    @TaskAction
+    fun run() {
+        val dest = File(destApkPath.get())
+        dest.parentFile.mkdirs()
+        
+        var copied = false
+        for (path in sourceApkPaths.get()) {
+            val src = File(path)
+            if (src.exists()) {
+                src.copyTo(dest, overwrite = true)
+                println("APK copied successfully from $path to ${dest.absolutePath}!")
+                copied = true
+                break
+            }
+        }
+        if (!copied) {
+            println("WARNING: Could not find any source APK to copy to web directory.")
         }
     }
 }

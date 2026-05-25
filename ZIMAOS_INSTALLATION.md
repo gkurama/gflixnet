@@ -1,19 +1,43 @@
 # 🚀 Instalação do Gflixnet no ZimaOS / CasaOS
 
-Este guia rápido explica como instalar o **Gflixnet Web** e o canal de sideload do seu aplicativo Android diretamente no seu **ZimaOS** ou qualquer servidor rodando **CasaOS**.
+Este guia explica como instalar o **Gflixnet Web & APK Portal** diretamente no seu **ZimaOS** ou qualquer servidor rodando **CasaOS**, resolvendo de forma definitiva o erro *"Falha ao baixar imagem: repositório não existe"*.
 
 ---
 
-## 🛠️ Método 1: Instalação Manual Super Rápida (Recomendado)
+## 🔍 Por que o erro *"Repositório não existe"* aconteceu?
 
-Como o ZimaOS suporta nativamente a importação direta de arquivos `docker-compose.yml`, você pode adicionar o Gflixnet com sua identidade visual completa em menos de 1 minuto!
+O erro ocorreu porque o Docker Compose anterior tentava usar uma imagem local chamada `gflixnet:latest`. Como o ZimaOS busca as imagens direto no Docker Hub e ela não havia sido enviada para a nuvem pública, o sistema acusava que ela não existia.
 
-### Passo a Passo:
+Para resolver isso de forma **profissional, segura e sem erros**, agora configuramos o aplicativo para usar a imagem oficial do **Nginx** (super leve e segura, baixada direto da biblioteca oficial do Docker) e ler os arquivos modificados do Gflixnet e o APK diretamente do armazenamento do seu ZimaOS!
 
-1. Acesse o painel inicial do seu **ZimaOS**.
-2. No canto superior direito da Loja de Aplicativos (App Store), clique no botão azul **"Adicionar um aplicativo conteinerizado"** (como visto no seu print-screen).
-3. Na janela que se abrir, clique no ícone de **"Importar"** (geralmente representado por um ícone de pasta ou documento/YAML no topo superior direito da janela de configuração).
-4. Copie e cole o código completo do painel abaixo dentro da caixa de texto:
+---
+
+## 🛠️ Método Recomendado: Instalação por Mapeamento de Pasta (100% livre de erros)
+
+Este método leva menos de 2 minutos e garante que o ícone do seu aplicativo, os estilos visuais, o player do navegador e o APK estejam sempre integrados perfeitamente.
+
+### 📋 Passo 1: Preparar a Pasta no ZimaOS
+
+1. Abra a interface do seu **ZimaOS** e vá no aplicativo oficial **Files** (Arquivos / Disco).
+2. Vá para o diretório de dados dos aplicativos, geralmente localizado em:
+   `Arquivos locais` ➔ `AppData`
+3. Crie uma nova pasta chamada `gflixnet` exatamente no seguinte endereço:
+   `/DATA/AppData/gflixnet`
+4. Dentro desta nova pasta `gflixnet`, copie ou envie os 5 arquivos de frontend do Gflixnet (você pode baixá-los do editor do AI Studio em um zip ou individualmente):
+   * `index.html` (o arquivo HTML da interface)
+   * `style.css` (os estilos elegantes e escuros)
+   * `app.js` (a lógica do portal)
+   * `manifest.json` (as configurações do app para iOS/Android)
+   * `Gflixnet.apk` (o APK compilado para Android/TV que fica dentro do seu painel do AI Studio em `/web/Gflixnet.apk`)
+
+---
+
+### 📝 Passo 2: Adicionar o Aplicativo pelo Yaml do ZimaOS
+
+1. Com os arquivos já carregados na pasta do seu ZimaOS, volte ao painel principal do sistema.
+2. Na Loja de Aplicativos (App Store), clique no botão azul localizado no canto superior direito: **"Adicionar um aplicativo conteinerizado"** (ou "Adicionar aplicativo manual").
+3. Na janela que abrir, clique no pequeno botão de **"Importar"** (representado por uma folha com lápis ou ícone de YAML, localizado no canto superior direito da janela de configuração).
+4. Copie e cole todo o código YAML atualizado abaixo dentro da caixa de texto:
 
 ```yaml
 version: '3.8'
@@ -21,10 +45,12 @@ version: '3.8'
 services:
   gflixnet-web:
     container_name: gflixnet-web
-    image: gflixnet:latest
+    image: nginx:alpine
     restart: unless-stopped
     ports:
       - "8096:80"
+    volumes:
+      - /DATA/AppData/gflixnet:/usr/share/nginx/html
     environment:
       - TZ=America/Sao_Paulo
 
@@ -51,39 +77,15 @@ x-casaos:
     pt_br: "Acesse sua biblioteca do Gflixnet através do navegador com interface de cinema. Permite baixar e fazer o sideload do APK Android compilado em seus dispositivos móveis ou Smart TVs."
 ```
 
-5. Clique em **"Salvar"** ou **"Confirmar"**.
-6. O ZimaOS preencherá automaticamente todos os parâmetros para você (Portas, Ícone, Título e Descrição).
-7. Clique em **"Instalar"** (Install). Pronto!
+5. Clique em **"Confirmar"** ou **"Salvar"** (o ZimaOS preencherá todo o painel automaticamente com o logotipo do Jellyfin, nome correto, categorias, rotas e portas).
+6. Depois clique em **"Instalar"** (Install). O ZimaOS irá baixar a imagem do `nginx:alpine` em segundos e inicializará seu portal.
 
 ---
 
-## 📦 Método 2: Como colocar o Gflixnet em uma Loja de Aplicativos Personalizada (App Store)
+## ⭐️ Vantagens deslumbrantes do novo formato no seu Painel:
 
-Se você deseja disponibilizar o Gflixnet para ser instalado com um único clique de forma nativa por você e por outros usuários dentro da própria Loja Oficial ou através de uma loja de terceiros (App Store do ZimaOS/CasaOS), o procedimento padrão é:
+* **Instantâneo**: Como usa o Nginx oficial, instala sem compilação demorada em qualquer processador (ARM64 como o ZimaBoard Lite ou AMD64 clássico Intel).
+* **Porta de Cinema Dedicada**: O sistema se conectará automaticamente através da porta de mídia corporativa `8096` vinculando-se perfeitamente aos seus serviços de rede.
+* **Instalação em Smart TVs e Celulares**: Qualquer smartphone ou TV conectada na mesma rede local que abrir o endereço `http://IP-DO-SEU-ZIMAOS:8096` poderá clicar em **"Baixar para Android"** para obter o APK de forma 100% nativa em segundos!
+* **Instalação no iPhone (iOS)**: Ao acessar o navegador Safari em um iPhone, toque no botão de compartilhar e selecione "Adicionar à Tela de Início" para ter o app nativo no iOS.
 
-### 1. Publicar a Imagem Docker
-Primeiro, a imagem criada pelo seu `Dockerfile` precisa ser enviada para um registro público (como o [Docker Hub](https://hub.docker.com/)). Em seu terminal de desenvolvimento (ZimaOS ou computador local):
-```bash
-# Faça o build localmente
-docker build -t seu-usuario-docker/gflixnet-web:latest .
-
-# Envie para o Docker Hub
-docker push seu-usuario-docker/gflixnet-web:latest
-```
-
-### 2. Configurar o Repositório da Loja do CasaOS/ZimaOS
-As lojas de aplicativos do CasaOS e ZimaOS são simplesmente repositórios Git públicos que hospedam arquivos `docker-compose.yml`. Para listar seu app:
-
-1. Faça um Fork do repositório oficial da App Store ou use um repositório de loja personalizado (como o [WisdomSky/CasaOS-AppStore](https://github.com/WisdomSky/CasaOS-AppStore)):
-   * Repositório Oficial: `https://github.com/IceWhaleTech/CasaOS-AppStore`
-2. Crie uma nova pasta dentro de `Apps/` chamada `Gflixnet/`.
-3. Adicione o arquivo `docker-compose.yml` que editamos nesta pasta.
-4. Faça um Pull Request para o repositório principal da loja ou crie sua própria Custom Store URL (basta adicionar a URL do seu repositório Git de aplicativos no botão `Adicionar Fonte` da loja do ZimaOS).
-
----
-
-## ⭐️ Vantagens da Integração Nativa no ZimaOS:
-
-* **Ícone e Interface Personalizados**: O aplicativo aparece no painel do ZimaOS com ícone específico e descrição detalhada.
-* **Auto-Mapeamento de Portas**: A porta `8096` (Web) é detectada e vinculada ao ícone de clique automático do sistema.
-* **Acesso do APK Estático**: Através do endereço IP do seu ZimaOS (por exemplo: `http://IP-DO-SEU-ZIMAOS:8096`), qualquer dispositivo móvel ou TV conectada à rede local poderá acessar a página web e realizar o download do APK `Gflixnet.apk` instantaneamente para instalação rápida.

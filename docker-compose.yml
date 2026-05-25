@@ -3,13 +3,12 @@ version: '3.8'
 services:
   gflixnet-web:
     container_name: gflixnet-web
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: gflixnet:latest
+    image: nginx:alpine
     restart: unless-stopped
     ports:
       - "8096:80"
+    volumes:
+      - /DATA/AppData/gflixnet:/usr/share/nginx/html
     environment:
       - TZ=America/Sao_Paulo
     
