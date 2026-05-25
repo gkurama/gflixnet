@@ -227,6 +227,20 @@ async function testAndLoadJellyfin() {
     if (!success) {
         indicator.className = 'status-circle offline';
         statusText.innerText = 'Erro Conexão';
+        
+        // Exibe um estado elegante de falha de conexão na biblioteca вместо do spinner infinito!
+        document.getElementById('mediaLibrary').innerHTML = `
+            <div class="loading-state connection-error-state" style="padding: 40px 20px; text-align: center; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; gap: 15px;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 54px; color: #FF9800; margin-bottom: 5px;"></i>
+                <h3 style="font-size: 20px; font-weight: 700;">Sem Conexão com o Servidor</h3>
+                <p style="color: var(--text-muted); max-width: 450px; line-height: 1.5; font-size: 14px;">Não foi possível autenticar ou conectar ao servidor Jellyfin em <span style="color: var(--primary-cyan); font-weight: 600;">${currentServerUrl}</span>.</p>
+                <p style="font-size: 12px; color: rgba(255,255,255,0.4); max-width: 400px; margin-top: -5px;">Por favor, confirme se o seu servidor local está online, se a URL está correta e se o CORS está devidamente habilitado.</p>
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="window.openAuthModal()" style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-server"></i> Configurar Servidor</button>
+                    <button class="btn btn-secondary" onclick="window.useDemoMode()" style="display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);"><i class="fa-solid fa-circle-play"></i> Modo de Demonstração</button>
+                </div>
+            </div>
+        `;
     }
 }
 
