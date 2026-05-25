@@ -813,18 +813,153 @@ body {
 /* Responsive Grid Adjustments */
 @media(max-width: 992px) {
     .app-header {
-        height: 120px;
+        height: auto;
+        min-height: 120px;
         flex-direction: column;
         justify-content: center;
-        gap: 10px;
-        padding: 10px;
+        gap: 12px;
+        padding: 15px 10px;
     }
     
     .app-container {
-        padding-top: 140px;
+        padding-top: 160px;
     }
 
     .hero-banner {
         height: 380px;
     }
+}
+
+@media(max-width: 576px) {
+    .header-right {
+        gap: 8px;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .download-apk-btn, .download-ios-btn {
+        padding: 8px 14px;
+        font-size: 11px;
+    }
+}
+
+/* Sideload iOS PWA button visual styles */
+.download-ios-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.download-ios-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #2D2D30 0%, #3D3D42 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.download-ios-btn i {
+    font-size: 15px;
+    color: #FFFFFF;
+}
+
+/* iOS App Installer Box styling */
+.ios-install-box {
+    max-width: 500px !important;
+    background: #171726 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px !important;
+    padding: 32px !important;
+    color: #FFFFFF;
+}
+
+.ios-install-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.ios-install-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 12px;
+    color: #FFFFFF;
+}
+
+.ios-install-header h3 {
+    font-size: 15px;
+    color: var(--primary-cyan);
+    font-weight: 600;
+    margin-top: 4px;
+    margin-bottom: 12px;
+}
+
+.ios-install-header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.apple-logo-glow {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #2C2C2E 0%, #1C1C1E 100%);
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #FFFFFF;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.ios-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 10px;
+    text-align: left;
+}
+
+.ios-step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.step-num {
+    background: #007AFF;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.step-desc {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #E2E2F0;
+}
+
+.step-desc i {
+    font-size: 14px;
+    margin: 0 2px;
 }

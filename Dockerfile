@@ -16,6 +16,7 @@ RUN rm -rf ./*
 COPY web/index.html .
 COPY web/style.css .
 COPY web/app.js .
+COPY web/manifest.json .
 
 # Copia o APK Android já compilado de forma limpa pelo Gradle (assembleDebug)
 # Isso torna a criação da imagem Docker extremamente leve e rápida no ZimaOS (sem precisar compilar o Android SDK na CPU do NAS)

@@ -2,9 +2,16 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gflixnet Web - Seu Cinema Pessoal</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Progressive Web App (PWA) and iOS native app settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gflixnet">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/svg/jellyfin-icon-transparent.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#08080C">
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -31,11 +38,17 @@
         </div>
 
         <div class="header-right">
-            <!-- Sideload Button with high-contrast pulsing design -->
+            <!-- Sideload Button with high-contrast pulsing design for Android -->
             <a href="/Gflixnet.apk" class="download-apk-btn" download="Gflixnet.apk">
                 <i class="fa-solid fa-download"></i>
-                <span>Baixar para Android / TV</span>
+                <span>Baixar para Android</span>
             </a>
+
+            <!-- Install for iOS Button -->
+            <button class="download-ios-btn" id="installIosBtn" onclick="openIosInstallModal()">
+                <i class="fa-brands fa-apple"></i>
+                <span>Instalar no iOS (iPhone)</span>
+            </button>
             
             <button class="server-status" id="serverStatusBtn" onclick="openAuthModal()">
                 <div class="status-circle offline" id="statusIndicator"></div>
@@ -195,6 +208,53 @@
 
         <div class="audio-right">
             <button class="btn btn-secondary btn-small" onclick="closeAudioPlayer()"><i class="fa-solid fa-xmark"></i> Fechar</button>
+        </div>
+    </div>
+
+    <!-- iOS / Apple Device Web App Installer Instructions Modal -->
+    <div class="modal" id="iosInstallModal">
+        <div class="modal-content ios-install-box">
+            <button class="modal-close" onclick="closeModal('iosInstallModal')">&times;</button>
+            <div class="ios-install-header">
+                <div class="apple-logo-glow"><i class="fa-brands fa-apple"></i></div>
+                <h2>Gflixnet Mobile Web App</h2>
+                <h3>Adicionar ao seu iPhone ou iPad</h3>
+                <p>O Gflixnet funciona exatamente como um aplicativo nativo no iOS quando instalado na sua tela de início (sem as barras do navegador e com inicialização rápida).</p>
+            </div>
+            
+            <div class="ios-steps">
+                <div class="ios-step-row">
+                    <div class="step-num shadow">1</div>
+                    <div class="step-desc">
+                        Certifique-se de estar usando o navegador <strong>Safari</strong> do seu iPhone ou iPad.
+                    </div>
+                </div>
+                
+                <div class="ios-step-row">
+                    <div class="step-num shadow">2</div>
+                    <div class="step-desc">
+                        Aperte o botão de <strong>Compartilhar</strong> <i class="fa-solid fa-arrow-up-from-bracket" style="color: #007AFF;"></i> (ícone de quadrado com seta para cima na barra debaixo).
+                    </div>
+                </div>
+
+                <div class="ios-step-row">
+                    <div class="step-num shadow">3</div>
+                    <div class="step-desc">
+                        Role a lista para baixo e toque em <strong>"Adicionar à Tela de Início"</strong> <i class="fa-solid fa-square-plus" style="color: #007AFF;"></i>.
+                    </div>
+                </div>
+
+                <div class="ios-step-row">
+                    <div class="step-num shadow">4</div>
+                    <div class="step-desc">
+                        Toque em <strong>"Adicionar"</strong> no canto superior direito para confirmar. Pronto!
+                    </div>
+                </div>
+            </div>
+
+            <div class="ios-install-footer" style="margin-top:20px; display:flex; justify-content:center;">
+                <button type="button" class="btn btn-primary" style="background:#007AFF;" onclick="closeModal('iosInstallModal')">Entendi, vou fazer!</button>
+            </div>
         </div>
     </div>
 

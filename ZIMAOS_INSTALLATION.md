@@ -24,7 +24,7 @@ services:
     image: gflixnet:latest
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "8096:80"
     environment:
       - TZ=America/Sao_Paulo
 
@@ -37,7 +37,7 @@ x-casaos:
   category: "Video"
   icon: "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/svg/jellyfin-icon-transparent.svg"
   index: /
-  port_map: "8080"
+  port_map: "8096"
   scheme: http
   developer: "Gflixnet"
   title:
@@ -85,5 +85,5 @@ As lojas de aplicativos do CasaOS e ZimaOS são simplesmente repositórios Git p
 ## ⭐️ Vantagens da Integração Nativa no ZimaOS:
 
 * **Ícone e Interface Personalizados**: O aplicativo aparece no painel do ZimaOS com ícone específico e descrição detalhada.
-* **Auto-Mapeamento de Portas**: A porta `8080` (Web) é detectada e vinculada ao ícone de clique automático do sistema.
-* **Acesso do APK Estático**: Através do endereço IP do seu ZimaOS (por exemplo: `http://IP-DO-SEU-ZIMAOS:8080`), qualquer dispositivo móvel ou TV conectada à rede local poderá acessar a página web e realizar o download do APK `Gflixnet.apk` instantaneamente para instalação rápida.
+* **Auto-Mapeamento de Portas**: A porta `8096` (Web) é detectada e vinculada ao ícone de clique automático do sistema.
+* **Acesso do APK Estático**: Através do endereço IP do seu ZimaOS (por exemplo: `http://IP-DO-SEU-ZIMAOS:8096`), qualquer dispositivo móvel ou TV conectada à rede local poderá acessar a página web e realizar o download do APK `Gflixnet.apk` instantaneamente para instalação rápida.

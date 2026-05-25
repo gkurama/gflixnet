@@ -127,6 +127,10 @@ window.openAuthModal = function() {
     document.getElementById('authModal').classList.add('active');
 };
 
+window.openIosInstallModal = function() {
+    document.getElementById('iosInstallModal').classList.add('active');
+};
+
 window.closeModal = function(modalId) {
     document.getElementById(modalId).classList.remove('active');
 };
