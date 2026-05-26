@@ -348,24 +348,6 @@ fun PlayerScreen(
         }
     }
 
-    // Initialize secondary muted ExoPlayer for mini preview seek in real-time
-    val previewExoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            volume = 0f
-            playWhenReady = false
-            // Disable audio track completely for the preview player to prevent decoder clash or focus steal
-            trackSelectionParameters = trackSelectionParameters.buildUpon()
-                .setTrackTypeDisabled(androidx.media3.common.C.TRACK_TYPE_AUDIO, true)
-                .build()
-        }
-    }
-
-    DisposableEffect(previewExoPlayer) {
-        onDispose {
-            previewExoPlayer.release()
-        }
-    }
-
     var isPlaying by remember { mutableStateOf(true) }
     var durationMs by remember { mutableStateOf(0L) }
     var positionMs by remember { mutableStateOf(0L) }
@@ -452,12 +434,6 @@ fun PlayerScreen(
             exoPlayer.volume = playerVolume
             exoPlayer.play()
             isPlaying = true
-
-            // Set up previewExoPlayer on the same video URL synchronously (muted)
-            previewExoPlayer.stop()
-            previewExoPlayer.clearMediaItems()
-            previewExoPlayer.setMediaItem(media3Item)
-            previewExoPlayer.prepare()
         }
     }
 
@@ -671,15 +647,6 @@ fun PlayerScreen(
 
                     Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                         IconButton(
-                            onClick = { showSubtitleDialog = true },
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.08f))
-                        ) {
-                            Icon(imageVector = Icons.Default.Tune, contentDescription = "Áudio e Legendas", tint = Color.White)
-                        }
-
-                        IconButton(
                             onClick = {},
                             modifier = Modifier
                                 .clip(CircleShape)
@@ -744,7 +711,6 @@ fun PlayerScreen(
                             val targetPos = (exoPlayer.currentPosition - 10000).coerceAtLeast(0)
                             exoPlayer.seekTo(targetPos)
                             positionMs = targetPos
-                            previewExoPlayer.seekTo(targetPos)
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -792,7 +758,6 @@ fun PlayerScreen(
                             val targetPos = (exoPlayer.currentPosition + 10000).coerceAtMost(durationMs)
                             exoPlayer.seekTo(targetPos)
                             positionMs = targetPos
-                            previewExoPlayer.seekTo(targetPos)
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -895,16 +860,11 @@ fun PlayerScreen(
                                         colors = CardDefaults.cardColors(containerColor = Color.Black)
                                     ) {
                                         Box(modifier = Modifier.fillMaxSize()) {
-                                            if (!activePlaybackUrl.isNullOrEmpty()) {
-                                                AndroidView(
-                                                    factory = { ctx ->
-                                                        PlayerView(ctx).apply {
-                                                            player = previewExoPlayer
-                                                            useController = false
-                                                            resizeMode = androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                                                            setBackgroundColor(android.graphics.Color.BLACK)
-                                                        }
-                                                    },
+                                            if (previewUrl.isNotEmpty()) {
+                                                AsyncImage(
+                                                    model = previewUrl,
+                                                    contentDescription = null,
+                                                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                                                     modifier = Modifier.fillMaxSize()
                                                 )
                                             } else {
@@ -1023,7 +983,6 @@ fun PlayerScreen(
                                     val seekPos = (percent * durationMs) / 100
                                     exoPlayer.seekTo(seekPos.toLong())
                                     positionMs = seekPos.toLong()
-                                    previewExoPlayer.seekTo(seekPos.toLong())
                                 }
                             },
                             valueRange = 0f..100f,
