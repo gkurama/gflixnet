@@ -14,7 +14,7 @@ services:
     
     # Custom Labels for direct Docker dashboard compatibility
     labels:
-      icon: "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/svg/jellyfin-icon-transparent.svg"
+      icon: "https://ais-pre-xwgnh2p5zbbvxt5ainzsmq-205481226109.europe-west2.run.app/zimaos_logo.png"
       title: "Gflixnet Web"
       tagline: "Gflixnet Player & APK Portal"
       description: "Acesse seu Gflixnet através do navegador e faça o sideload do APK compilado diretamente em seus celulares ou TVs Android."
@@ -31,7 +31,7 @@ x-casaos:
   main: gflixnet-web
   author: "Gflixnet Team"
   category: "Video"
-  icon: "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/svg/jellyfin-icon-transparent.svg"
+  icon: "https://ais-pre-xwgnh2p5zbbvxt5ainzsmq-205481226109.europe-west2.run.app/zimaos_logo.png"
   index: /
   port_map: "8096"
   scheme: http

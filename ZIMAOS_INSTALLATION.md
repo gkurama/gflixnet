@@ -61,7 +61,7 @@ x-casaos:
   main: gflixnet-web
   author: "Gflixnet Team"
   category: "Video"
-  icon: "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/svg/jellyfin-icon-transparent.svg"
+  icon: "https://ais-pre-xwgnh2p5zbbvxt5ainzsmq-205481226109.europe-west2.run.app/zimaos_logo.png"
   index: /
   port_map: "8096"
   scheme: http
