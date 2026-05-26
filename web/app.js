@@ -435,8 +435,8 @@ async function fetchAndRenderJellyfinLibrary() {
                 : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200';
 
             const streamUrl = isAudio 
-                ? `${currentServerUrl}/Audio/${item.Id}/stream?static=true&api_key=${currentToken}`
-                : `${currentServerUrl}/Videos/${item.Id}/stream?static=true&api_key=${currentToken}`;
+                ? `${currentServerUrl}/Audio/${item.Id}/stream?api_key=${currentToken}&static=false&AudioCodec=aac,mp3`
+                : `${currentServerUrl}/Videos/${item.Id}/stream?api_key=${currentToken}&static=false&AudioCodec=aac`;
 
             // Determine if the item path or context classifies this as Biblical or TV Series
             const normPath = pathStr.toLowerCase();
@@ -579,7 +579,7 @@ function renderMediaRows() {
             let gridCardsHtml = '';
             list.forEach(it => {
                 gridCardsHtml += `
-                    <div class="media-card" onclick='openMediaDetail("${encodeURIComponent(JSON.stringify(it))}")'>
+                    <div class="media-card" onclick='openMediaDetail("${encodeURIComponent(JSON.stringify(it)).replace(/'/g, "%27")}")'>
                         <img src="${it.posterUrl}" class="card-poster" alt="${it.title}" loading="lazy">
                         <span class="card-badge">${it.detailsSubtitle}</span>
                         <div class="card-info">
@@ -631,7 +631,7 @@ function renderMediaRows() {
         let gridCardsHtml = '';
         filtered.forEach(it => {
             gridCardsHtml += `
-                <div class="media-card grid-style" onclick='openMediaDetail("${encodeURIComponent(JSON.stringify(it))}")'>
+                <div class="media-card grid-style" onclick='openMediaDetail("${encodeURIComponent(JSON.stringify(it)).replace(/'/g, "%27")}")'>
                     <div class="poster-container">
                         <img src="${it.posterUrl}" class="card-poster" alt="${it.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400'">
                         <span class="card-badge">${it.detailsSubtitle}</span>
@@ -664,7 +664,7 @@ function renderMediaRows() {
                         <span class="apk-count-badge">1-${filtered.length} de ${filtered.length}</span>
                     </div>
                     <div class="apk-grid-controls">
-                        <i class="fa-solid fa-shuffle" onclick="playRandomFromGrid('${encodeURIComponent(JSON.stringify(filtered))}')" title="Reproduzir Aleatório" style="cursor: pointer; padding: 6px; color: var(--primary-cyan);"></i>
+                        <i class="fa-solid fa-shuffle" onclick="playRandomFromGrid('${encodeURIComponent(JSON.stringify(filtered)).replace(/'/g, "%27")}')" title="Reproduzir Aleatório" style="cursor: pointer; padding: 6px; color: var(--primary-cyan);"></i>
                         <i class="fa-solid fa-border-all active" style="color: var(--primary-cyan);"></i>
                         <i class="fa-solid fa-arrow-down-a-z" style="color: var(--text-muted);"></i>
                     </div>
@@ -796,7 +796,7 @@ async function fetchEpisodesForSeries(seriesId) {
                 seasonNumber: ep.ParentIndexNumber || 1,
                 duration: durationStr,
                 thumbnailUrl: thumbUrl,
-                streamUrl: `${currentServerUrl}/Videos/${ep.Id}/stream?static=true&api_key=${currentToken}`
+                streamUrl: `${currentServerUrl}/Videos/${ep.Id}/stream?api_key=${currentToken}&static=false&AudioCodec=aac`
             };
         });
     } catch (e) {
