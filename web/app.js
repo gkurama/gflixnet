@@ -226,21 +226,7 @@ const demoMediaData = [
 // Instantly check if an item belongs to biblical category
 function isBiblicalItem(item) {
     if (!item) return false;
-    if (item.isBiblical === true) return true;
-    
-    // Auto-detection based on language strings for real Jellyfin content
-    const title = (item.title || "").toLowerCase();
-    const genres = (item.genres || "").toLowerCase();
-    const synopsis = (item.synopsis || "").toLowerCase();
-    const libraryName = (item.libraryName || "").toLowerCase();
-    
-    const keywords = [
-        "bíbli", "biblic", "bíblic", "paulo", "jesus", "deus", "rei", "chosen", 
-        "testamento", "apóstolo", "apóstolos", "gênesis", "samuel", "mandamentos", 
-        "crença", "fé", "moisés", "noé", "religi", "cristo", "apostolo", "davi", "escolhidos"
-    ];
-    
-    return keywords.some(word => title.includes(word) || genres.includes(word) || synopsis.includes(word) || libraryName.includes(word));
+    return item.isBiblical === true;
 }
 
 // Document Ready Initialization
@@ -458,38 +444,35 @@ async function fetchAndRenderJellyfinLibrary() {
             let libraryNameFinal = isAudio ? "Músicas" : (isSeries ? "Séries de TV" : "Filmes recomendados");
 
             // Look up physical folders configured inside ZimaOS Jellyfin
-            if (normPath.includes("filmes biblico") || normPath.includes("filmes bíb")) {
+            if (normPath.includes("filmes biblicos") || normPath.includes("filmes biblico") || normPath.includes("filmes bíb") || normPath.includes("filme biblico") || normPath.includes("filme bíb")) {
                 isBiblicalFinal = true;
                 isSeries = false;
                 libraryNameFinal = "Filmes Bíblicos";
-            } else if (normPath.includes("serie biblico") || normPath.includes("série bíb") || normPath.includes("séries bíb")) {
+            } else if (normPath.includes("series biblicas") || normPath.includes("series biblica") || normPath.includes("séries bíb") || normPath.includes("séries bíblicas") || normPath.includes("serie biblica") || normPath.includes("série bíblica") || normPath.includes("series biblico") || normPath.includes("série bíb")) {
                 isBiblicalFinal = true;
                 isSeries = true;
                 libraryNameFinal = "Séries Bíblicas";
-            } else if (normPath.includes("/series") || normPath.includes("media/series")) {
+            } else if (normPath.includes("/series") || normPath.includes("media/series") || normPath.includes("/séries") || normPath.includes("media/séries")) {
                 isSeries = true;
                 isBiblicalFinal = false;
                 libraryNameFinal = "Séries de TV";
-            } else if (normPath.includes("/filme")) {
+            } else if (normPath.includes("/filmes") || normPath.includes("/filme")) {
                 isSeries = false;
                 isBiblicalFinal = false;
                 libraryNameFinal = "Filmes recomendados";
+            } else if (normPath.includes("/musica") || normPath.includes("/música") || normPath.includes("/musicas") || normPath.includes("/músicas") || isAudio) {
+                isSeries = false;
+                isBiblicalFinal = false;
+                libraryNameFinal = "Músicas";
             } else {
-                // Fallback using isBiblicalItem helper for other paths
-                const checkBib = isBiblicalItem({
-                    title: item.Name,
-                    genres: item.Genres ? item.Genres.join(", ") : "",
-                    synopsis: item.Overview || "",
-                    libraryName: "",
-                    path: pathStr
-                });
-                if (checkBib) {
-                    isBiblicalFinal = true;
-                    if (isSeries) {
-                        libraryNameFinal = "Séries Bíblicas";
-                    } else {
-                        libraryNameFinal = "Filmes Bíblicos";
-                    }
+                // Strict fallback checking only normal files types, no heuristics
+                isBiblicalFinal = false;
+                if (isAudio) {
+                    libraryNameFinal = "Músicas";
+                } else if (isSeries) {
+                    libraryNameFinal = "Séries de TV";
+                } else {
+                    libraryNameFinal = "Filmes recomendados";
                 }
             }
 

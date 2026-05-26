@@ -27,7 +27,7 @@ interface JellyfinApi {
         @Path("userId") userId: String,
         @Query("IncludeItemTypes") includeItemTypes: String = "Movie,Series,Audio",
         @Query("Recursive") recursive: Boolean = true,
-        @Query("Fields") fields: String = "PrimaryImageAspectRatio,BasicSyncInfo,Overview,Genres,ProductionYear,RunTimeTicks,OfficialRating,Studios",
+        @Query("Fields") fields: String = "PrimaryImageAspectRatio,BasicSyncInfo,Overview,Genres,ProductionYear,RunTimeTicks,OfficialRating,Studios,Path",
         @Query("ParentId") parentId: String? = null
     ): JellyfinItemsResponse
 

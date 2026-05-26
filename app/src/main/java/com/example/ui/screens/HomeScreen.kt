@@ -61,38 +61,19 @@ fun HomeScreen(
     val displayItems = remember(items, activeHomeMode, activeFilterTag) {
         val baseList = when (activeHomeMode) {
             "filmes" -> items.filter { 
-                !it.isSeries && 
-                it.detailsSubtitle != "Música" && 
-                !it.libraryName.contains("Bibl", ignoreCase = true) && 
-                !it.genres.contains("Bíblico", ignoreCase = true) &&
-                !it.genres.contains("Bíblica", ignoreCase = true)
+                !it.isSeries && (it.libraryName.equals("Filmes", ignoreCase = true) || it.detailsSubtitle.equals("Filme", ignoreCase = true))
             }
             "series" -> items.filter { 
-                it.isSeries && 
-                !it.libraryName.contains("Bibl", ignoreCase = true) && 
-                !it.genres.contains("Bíblico", ignoreCase = true) &&
-                !it.genres.contains("Bíblica", ignoreCase = true)
+                it.isSeries && (it.libraryName.equals("Séries", ignoreCase = true) || it.detailsSubtitle.equals("Série de TV", ignoreCase = true))
             }
             "filmes_biblicos" -> items.filter { 
-                !it.isSeries && 
-                (it.libraryName.contains("Bibl", ignoreCase = true) ||
-                 it.genres.contains("Bíblico", ignoreCase = true) ||
-                 it.genres.contains("Bíblica", ignoreCase = true) ||
-                 it.genres.contains("Religioso", ignoreCase = true) ||
-                 it.title.contains("Bíblico", ignoreCase = true) ||
-                 it.title.contains("Bíblica", ignoreCase = true))
+                !it.isSeries && (it.libraryName.equals("Filmes Bíblicos", ignoreCase = true) || it.detailsSubtitle.equals("Filme Bíblico", ignoreCase = true))
             }
             "series_biblicas" -> items.filter { 
-                it.isSeries && 
-                (it.libraryName.contains("Bibl", ignoreCase = true) ||
-                 it.genres.contains("Bíblico", ignoreCase = true) ||
-                 it.genres.contains("Bíblica", ignoreCase = true) ||
-                 it.genres.contains("Religioso", ignoreCase = true) ||
-                 it.title.contains("Bíblico", ignoreCase = true) ||
-                 it.title.contains("Bíblica", ignoreCase = true))
+                it.isSeries && (it.libraryName.equals("Séries Bíblicas", ignoreCase = true) || it.detailsSubtitle.equals("Série Bíblica", ignoreCase = true))
             }
             "musica" -> items.filter { 
-                it.detailsSubtitle == "Música"
+                it.libraryName.equals("Músicas", ignoreCase = true) || it.detailsSubtitle.equals("Música", ignoreCase = true)
             }
             else -> items
         }
@@ -111,49 +92,30 @@ fun HomeScreen(
 
     val recentMovies = remember(items) {
         items.filter { 
-            !it.isSeries && 
-            it.detailsSubtitle != "Música" &&
-            !it.libraryName.contains("Bibl", ignoreCase = true) &&
-            !it.genres.contains("Bíblico", ignoreCase = true) &&
-            !it.genres.contains("Bíblica", ignoreCase = true)
+            !it.isSeries && (it.libraryName.equals("Filmes", ignoreCase = true) || it.detailsSubtitle.equals("Filme", ignoreCase = true))
         }.take(10)
     }
 
     val recentSeries = remember(items) {
         items.filter { 
-            it.isSeries &&
-            !it.libraryName.contains("Bibl", ignoreCase = true) &&
-            !it.genres.contains("Bíblico", ignoreCase = true) &&
-            !it.genres.contains("Bíblica", ignoreCase = true)
+            it.isSeries && (it.libraryName.equals("Séries", ignoreCase = true) || it.detailsSubtitle.equals("Série de TV", ignoreCase = true))
         }.take(10)
     }
 
     val recentBiblicalMovies = remember(items) {
         items.filter { 
-            !it.isSeries && 
-            (it.libraryName.contains("Bibl", ignoreCase = true) ||
-             it.genres.contains("Bíblico", ignoreCase = true) ||
-             it.genres.contains("Bíblica", ignoreCase = true) ||
-             it.genres.contains("Religioso", ignoreCase = true) ||
-             it.title.contains("Bíblico", ignoreCase = true) ||
-             it.title.contains("Bíblica", ignoreCase = true))
+            !it.isSeries && (it.libraryName.equals("Filmes Bíblicos", ignoreCase = true) || it.detailsSubtitle.equals("Filme Bíblico", ignoreCase = true))
         }.take(10)
     }
 
     val recentBiblicalSeries = remember(items) {
         items.filter { 
-            it.isSeries && 
-            (it.libraryName.contains("Bibl", ignoreCase = true) ||
-             it.genres.contains("Bíblico", ignoreCase = true) ||
-             it.genres.contains("Bíblica", ignoreCase = true) ||
-             it.genres.contains("Religioso", ignoreCase = true) ||
-             it.title.contains("Bíblico", ignoreCase = true) ||
-             it.title.contains("Bíblica", ignoreCase = true))
+            it.isSeries && (it.libraryName.equals("Séries Bíblicas", ignoreCase = true) || it.detailsSubtitle.equals("Série Bíblica", ignoreCase = true))
         }.take(10)
     }
 
     val recentMusic = remember(items) {
-        items.filter { it.detailsSubtitle == "Música" }.take(10)
+        items.filter { it.libraryName.equals("Músicas", ignoreCase = true) || it.detailsSubtitle.equals("Música", ignoreCase = true) }.take(10)
     }
 
     Column(

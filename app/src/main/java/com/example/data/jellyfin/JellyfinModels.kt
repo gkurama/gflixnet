@@ -39,6 +39,7 @@ data class JellyfinItem(
     @Json(name = "ImageTags") val imageTags: JellyfinItemImageTags? = null,
     @Json(name = "Album") val album: String? = null,
     @Json(name = "Artists") val artists: List<String>? = null,
+    @Json(name = "Path") val path: String? = null,
     @Json(name = "IndexNumber") val indexNumber: Int? = null,
     @Json(name = "ParentIndexNumber") val parentIndexNumber: Int? = null
 )

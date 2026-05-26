@@ -353,6 +353,10 @@ fun PlayerScreen(
         ExoPlayer.Builder(context).build().apply {
             volume = 0f
             playWhenReady = false
+            // Disable audio track completely for the preview player to prevent decoder clash or focus steal
+            trackSelectionParameters = trackSelectionParameters.buildUpon()
+                .setTrackTypeDisabled(androidx.media3.common.C.TRACK_TYPE_AUDIO, true)
+                .build()
         }
     }
 
@@ -366,6 +370,9 @@ fun PlayerScreen(
     var durationMs by remember { mutableStateOf(0L) }
     var positionMs by remember { mutableStateOf(0L) }
     var playerVolume by remember { mutableStateOf(1f) }
+
+    var availableAudioTracks by remember { mutableStateOf<List<Pair<Int, String>>>(emptyList()) }
+    var selectedAudioTrackIndex by remember { mutableStateOf(-1) }
 
     // Toggle popups
     var showSubtitleDialog by remember { mutableStateOf(false) }
@@ -386,6 +393,35 @@ fun PlayerScreen(
                 } else if (state == Player.STATE_ENDED) {
                     playNext()
                 }
+            }
+            override fun onTracksChanged(tracks: androidx.media3.common.Tracks) {
+                val audioTracks = mutableListOf<Pair<Int, String>>()
+                var trackIdx = 0
+                for (group in tracks.groups) {
+                    if (group.type == androidx.media3.common.C.TRACK_TYPE_AUDIO) {
+                        for (i in 0 until group.length) {
+                            val format = group.getTrackFormat(i)
+                            val lang = format.language ?: "und"
+                            val channels = format.channelCount
+                            val label = format.label ?: ""
+                            val trackName = buildString {
+                                append(if (lang == "und") "Áudio" else lang.uppercase())
+                                if (channels > 0) {
+                                    if (channels == 2) append(" (Estéreo)")
+                                    else if (channels == 6) append(" (5.1)")
+                                    else append(" ($channels canais)")
+                                }
+                                if (label.isNotEmpty()) append(" - $label")
+                            }
+                            audioTracks.add(trackIdx to trackName)
+                            if (group.isTrackSelected(i)) {
+                                selectedAudioTrackIndex = trackIdx
+                            }
+                            trackIdx++
+                        }
+                    }
+                }
+                availableAudioTracks = audioTracks
             }
         }
     }
@@ -413,6 +449,7 @@ fun PlayerScreen(
             val media3Item = Media3Item.fromUri(activePlaybackUrl!!)
             exoPlayer.setMediaItem(media3Item)
             exoPlayer.prepare()
+            exoPlayer.volume = playerVolume
             exoPlayer.play()
             isPlaying = true
 
@@ -633,6 +670,15 @@ fun PlayerScreen(
                     }
 
                     Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                        IconButton(
+                            onClick = { showSubtitleDialog = true },
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.08f))
+                        ) {
+                            Icon(imageVector = Icons.Default.Tune, contentDescription = "Áudio e Legendas", tint = Color.White)
+                        }
+
                         IconButton(
                             onClick = {},
                             modifier = Modifier
@@ -1089,13 +1135,13 @@ fun PlayerScreen(
             }
         }
 
-        // 4. FLOATING SETTINGS SUITE POPOVER (Subtitles Choice dialog)
+        // 4. FLOATING SETTINGS SUITE POPOVER (Audio & Subtitles dialog)
         if (showSubtitleDialog) {
             AlertDialog(
                 onDismissRequest = { showSubtitleDialog = false },
                 title = {
                     Text(
-                        text = "Configurações de Legendas",
+                        text = "Áudio e Legendas",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -1103,8 +1149,79 @@ fun PlayerScreen(
                 },
                 text = {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(18.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
+                        // Dynamically detected Audio Tracks!
+                        if (availableAudioTracks.isNotEmpty()) {
+                            Column {
+                                Text(
+                                    "Idioma / Faixa de Áudio",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    availableAudioTracks.forEach { (index, name) ->
+                                        val isSelected = selectedAudioTrackIndex == index
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.White.copy(alpha = 0.05f))
+                                                .border(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+                                                .clickable { 
+                                                    if (index >= 0) {
+                                                        val tracks_now = exoPlayer.currentTracks
+                                                        val builder = exoPlayer.trackSelectionParameters.buildUpon()
+                                                        var currentIdx = 0
+                                                        for (group in tracks_now.groups) {
+                                                            if (group.type == androidx.media3.common.C.TRACK_TYPE_AUDIO) {
+                                                                for (i in 0 until group.length) {
+                                                                    if (currentIdx == index) {
+                                                                        builder.setOverrideForType(
+                                                                            androidx.media3.common.TrackSelectionOverride(group.mediaTrackGroup, i)
+                                                                        )
+                                                                        selectedAudioTrackIndex = index
+                                                                        break
+                                                                    }
+                                                                    currentIdx++
+                                                                }
+                                                            }
+                                                        }
+                                                        exoPlayer.trackSelectionParameters = builder.build()
+                                                    }
+                                                }
+                                                .padding(horizontal = 12.dp, vertical = 10.dp)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = name,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else Color.White
+                                                )
+                                                if (isSelected) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Check,
+                                                        contentDescription = "Selecionado",
+                                                        tint = MaterialTheme.colorScheme.primary,
+                                                        modifier = Modifier.size(16.dp)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
                         Column {
                             Text(
                                 "Idioma da Legenda",
