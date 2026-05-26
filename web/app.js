@@ -10,11 +10,138 @@ let allMediaItems = [];
 let currentCategory = 'all';
 let currentSelectedMedia = null;
 let heroMediaItem = null;
+let heroInterval = null;
+let currentHeroIndex = 0;
 
 // Mock / Demo Media Data
 const demoMediaData = [
     {
+        id: "bib_1",
+        title: "Paulo, o Apóstolo",
+        year: 2025,
+        runtime: "1h 48min",
+        isSeries: false,
+        isBiblical: true,
+        detailsSubtitle: "Filme Bíblico",
+        rating: "12+",
+        genres: "Bíblico, Drama, História",
+        tags: "Bíblico, Fé, 1080p",
+        synopsis: "Paulo, que passa de perseguidor infame de cristãos ao apóstolo mais influente de Jesus Cristo, vive seus últimos dias em uma cela fria em Roma, aguardando a execução pelo imperador Nero. Lucas, seu amigo e médico romano, o visita para registrar sua fascinante história.",
+        director: "Andrew Hyatt",
+        writers: "Andrew Hyatt",
+        language: "Português",
+        awards: "Destaque Fé",
+        libraryName: "Filmes Bíblicos",
+        posterUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400",
+        backdropUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200",
+        streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    },
+    {
+        id: "bib_2",
+        title: "The Chosen: Os Escolhidos",
+        year: 2024,
+        runtime: "Série",
+        isSeries: true,
+        isBiblical: true,
+        detailsSubtitle: "Série Bíblica",
+        rating: "Livre",
+        genres: "Bíblico, Drama, Histórico",
+        tags: "Bíblico, Série, Popular",
+        synopsis: "Um pescador carismático que se afoga em dívidas, uma mulher perturbada enfrentando seus próprios demônios e um jovem cobrador de impostos ostracizado pela sociedade encontram um homem misterioso de Nazaré que transforma suas vidas para sempre.",
+        director: "Dallas Jenkins",
+        writers: "Dallas Jenkins",
+        language: "Português",
+        awards: "Série do Ano",
+        libraryName: "Séries Bíblicas",
+        posterUrl: "https://images.unsplash.com/photo-1510137600163-2729bc6959a6?q=80&w=400",
+        backdropUrl: "https://images.unsplash.com/photo-1510137600163-2729bc6959a6?q=80&w=1200",
+        streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
+    },
+    {
+        id: "bib_3",
+        title: "A Paixão de Cristo",
+        year: 2024,
+        runtime: "2h 06min",
+        isSeries: false,
+        isBiblical: true,
+        detailsSubtitle: "Filme Bíblico",
+        rating: "14+",
+        genres: "Bíblico, Drama, Épico",
+        tags: "Bíblico, Clássico, HDR",
+        synopsis: "Uma representação profunda e visceral das últimas doze horas da vida de Jesus de Nazaré em Jerusalém, retratando o dia da sua crucificação com extraordinária carga emocional e fidelidade bíblica.",
+        director: "Mel Gibson",
+        writers: "Benedict Fitzgerald",
+        language: "Português",
+        awards: "Campeão de Bilheteria",
+        libraryName: "Filmes Bíblicos",
+        posterUrl: "https://images.unsplash.com/photo-1509024644558-2f56ce76c490?q=80&w=400",
+        backdropUrl: "https://images.unsplash.com/photo-1509024644558-2f56ce76c490?q=80&w=1200",
+        streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
+    },
+    {
+        id: "bib_4",
+        title: "Reis",
+        year: 2024,
+        runtime: "Série",
+        isSeries: true,
+        isBiblical: true,
+        detailsSubtitle: "Série Bíblica",
+        rating: "12+",
+        genres: "Bíblico, Drama, Épico",
+        tags: "Bíblico, Produção Nacional",
+        synopsis: "A fantástica saga da monarquia em Israel, desde a transição de juízes até a unificação dos reinos sob a liderança de Saul, as batalhas heróicas do Rei Davi e os ensinamentos majestosos do sábio Salomão.",
+        director: "Leonardo Miranda",
+        writers: "Raphaela Castro",
+        language: "Português",
+        awards: "Sucesso Audiovisual de Fé",
+        libraryName: "Séries Bíblicas",
+        posterUrl: "https://images.unsplash.com/photo-1473163928189-364b2c4e1135?q=80&w=400",
+        backdropUrl: "https://images.unsplash.com/photo-1473163928189-364b2c4e1135?q=80&w=1200",
+        streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    },
+    {
+        id: "bib_5",
+        title: "Os Dez Mandamentos",
+        year: 2023,
+        runtime: "2h 10min",
+        isSeries: false,
+        isBiblical: true,
+        detailsSubtitle: "Filme Bíblico",
+        rating: "Livre",
+        genres: "Bíblico, Épico, Drama",
+        tags: "Bíblico, Clássico, História",
+        synopsis: "A inspiradora jornada do profeta Moisés desde o seu nascimento em uma cesta flutuante no Egito até a liderança do povo rumo à libertação, cruzando o Mar Vermelho e recebendo as tábuas da Lei no topo do Sinai.",
+        director: "Alexandre Avancini",
+        writers: "Vivian de Oliveira",
+        language: "Português",
+        awards: "Recorde de Bilheteria",
+        libraryName: "Filmes Bíblicos",
+        posterUrl: "https://images.unsplash.com/photo-1519817650390-64a93db51149?q=80&w=400",
+        backdropUrl: "https://images.unsplash.com/photo-1519817650390-64a93db51149?q=80&w=1200",
+        streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
+    },
+    {
         id: "demo_1",
+        title: "Tojima Wants to Be a Kamen Rider",
+        year: 2024,
+        runtime: "Série",
+        isSeries: true,
+        detailsSubtitle: "Série de Tokusatsu",
+        rating: "10+",
+        genres: "Ação, Fantasia, Tokusatsu",
+        tags: "Jellyfin, 1080p, Legendado",
+        synopsis: "Tojima é um jovem nerd apaixonado pela cultura de super-heróis japoneses. Ao encontrar um cinto de transformação misterioso abandonado, ele depara-se com uma conspiração cibernética sombria e decide assumir o manto do lendário Kamen Rider.",
+        director: "Shinichiro Shirakura",
+        writers: "Shotaro Ishinomori",
+        language: "Japonês",
+        awards: "Destaque Tokusatsu",
+        libraryName: "Séries de TV",
+        posterUrl: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400",
+        backdropUrl: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200",
+        streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    },
+    {
+        id: "demo_2",
         title: "Big Buck Bunny",
         year: 2008,
         runtime: "10min",
@@ -34,7 +161,7 @@ const demoMediaData = [
         streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     },
     {
-        id: "demo_2",
+        id: "demo_3",
         title: "Tears of Steel",
         year: 2012,
         runtime: "12min",
@@ -54,7 +181,7 @@ const demoMediaData = [
         streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
     },
     {
-        id: "demo_3",
+        id: "demo_4",
         title: "Sintel",
         year: 2010,
         runtime: "15min",
@@ -74,7 +201,7 @@ const demoMediaData = [
         streamUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
     },
     {
-        id: "demo_4",
+        id: "demo_5",
         title: "Submersion Beats",
         year: 2023,
         runtime: "5min",
@@ -96,10 +223,44 @@ const demoMediaData = [
     }
 ];
 
+// Instantly check if an item belongs to biblical category
+function isBiblicalItem(item) {
+    if (!item) return false;
+    if (item.isBiblical === true) return true;
+    
+    // Auto-detection based on language strings for real Jellyfin content
+    const title = (item.title || "").toLowerCase();
+    const genres = (item.genres || "").toLowerCase();
+    const synopsis = (item.synopsis || "").toLowerCase();
+    const libraryName = (item.libraryName || "").toLowerCase();
+    
+    const keywords = [
+        "bíbli", "biblic", "bíblic", "paulo", "jesus", "deus", "rei", "chosen", 
+        "testamento", "apóstolo", "apóstolos", "gênesis", "samuel", "mandamentos", 
+        "crença", "fé", "moisés", "noé", "religi", "cristo", "apostolo", "davi", "escolhidos"
+    ];
+    
+    return keywords.some(word => title.includes(word) || genres.includes(word) || synopsis.includes(word) || libraryName.includes(word));
+}
+
 // Document Ready Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
+    setupSplashTimer();
 });
+
+function setupSplashTimer() {
+    const splash = document.getElementById('apkSplashScreen');
+    if (!splash) return;
+    
+    // Simulate premium APK loading
+    setTimeout(() => {
+        splash.style.opacity = '0';
+        setTimeout(() => {
+            splash.style.display = 'none';
+        }, 500);
+    }, 2800);
+}
 
 function initApp() {
     // Fill Connection Modal fields with saved state
@@ -118,7 +279,7 @@ function initApp() {
         // Automatically open Connection modal on first launch to assist configuration
         setTimeout(() => {
             openAuthModal();
-        }, 800);
+        }, 3200); // Trigger just after splash fades
     }
 }
 
@@ -211,8 +372,9 @@ function loadDemoMode() {
     allMediaItems = demoMediaData;
     renderMediaRows();
     
-    // Choose first as hero
+    // Choose first as hero and start automatic carousel rotation
     setHeroBanner(allMediaItems[0]);
+    startHeroCarousel();
 }
 
 // Sincronizar via Jellyfin
@@ -317,6 +479,7 @@ async function fetchAndRenderJellyfinLibrary() {
         if (allMediaItems.length > 0) {
             renderMediaRows();
             setHeroBanner(allMediaItems[0]);
+            startHeroCarousel();
         } else {
             document.getElementById('mediaLibrary').innerHTML = `
                 <div class="loading-state">
@@ -333,55 +496,96 @@ async function fetchAndRenderJellyfinLibrary() {
     }
 }
 
-// Display elements dynamically
+// Display elements dynamically in horizontal rows or APK vertical grids
 function renderMediaRows() {
     const libraryContainer = document.getElementById('mediaLibrary');
-    libraryContainer.innerHTML = '';
-
-    // Group items by Library Name or Type
-    const categories = {};
+    if (!libraryContainer) return;
     
-    // Sort items by specific rows
-    allMediaItems.forEach(item => {
-        const laneName = item.libraryName || 'Gerais';
-        if (!categories[laneName]) {
-            categories[laneName] = [];
+    libraryContainer.innerHTML = '';
+    
+    // Automatically smooth-scroll to page body start on category switches for premium UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (currentCategory === 'all') {
+        // Horizontal cinematic lanes grouped by type/thematic folders
+        const lanes = {
+            "Filmes Bíblicos": allMediaItems.filter(it => !it.isSeries && it.type !== 'Audio' && isBiblicalItem(it)),
+            "Séries Bíblicas": allMediaItems.filter(it => it.isSeries && isBiblicalItem(it)),
+            "Filmes Recomendados": allMediaItems.filter(it => !it.isSeries && it.type !== 'Audio' && !isBiblicalItem(it)),
+            "Séries de TV": allMediaItems.filter(it => it.isSeries && !isBiblicalItem(it)),
+            "Músicas": allMediaItems.filter(it => it.type === 'Audio')
+        };
+
+        for (const laneName in lanes) {
+            const list = lanes[laneName];
+            if (list.length === 0) continue;
+
+            const laneElement = document.createElement('section');
+            laneElement.className = 'media-lane';
+            
+            let laneIcon = 'fa-clapperboard';
+            if (laneName.includes('Músic')) laneIcon = 'fa-music';
+            else if (laneName.includes('Séri')) laneIcon = 'fa-tv';
+            else if (laneName.includes('Bíb')) laneIcon = 'fa-book-bible';
+
+            let gridCardsHtml = '';
+            list.forEach(it => {
+                gridCardsHtml += `
+                    <div class="media-card" onclick='openMediaDetail("${encodeURIComponent(JSON.stringify(it))}")'>
+                        <img src="${it.posterUrl}" class="card-poster" alt="${it.title}" loading="lazy">
+                        <span class="card-badge">${it.detailsSubtitle}</span>
+                        <div class="card-info">
+                            <div class="card-title">${it.title}</div>
+                            <div class="card-meta">
+                                <span>${it.year}</span>
+                                <span>${it.runtime}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            laneElement.innerHTML = `
+                <div class="lane-header">
+                    <i class="fa-solid ${laneIcon}"></i>
+                    <h3>${laneName}</h3>
+                </div>
+                <div class="lane-grid">
+                    ${gridCardsHtml}
+                </div>
+            `;
+            libraryContainer.appendChild(laneElement);
         }
-        categories[laneName].push(item);
-    });
-
-    for (const laneName in categories) {
-        const items = categories[laneName];
-        if (items.length === 0) continue;
-
-        // Apply filters if screen has a filter set
-        const filtered = items.filter(it => {
-            if (currentCategory === 'all') return true;
-            if (currentCategory === 'Movie') return it.type === 'Movie' || (!it.isSeries && it.type !== 'Audio');
-            if (currentCategory === 'Series') return it.isSeries || it.type === 'Series';
-            if (currentCategory === 'Audio') return it.type === 'Audio';
-            return true;
-        });
-
-        if (filtered.length === 0) continue;
-
-        const laneElement = document.createElement('section');
-        laneElement.className = 'media-lane';
+    } else {
+        // Render a high-fidelity vertical grid (matching the mobile APK catalogs)
+        let filtered = [];
+        let categoryTitle = "";
         
-        // Select appropriate icon
-        let laneIcon = 'fa-clapperboard';
-        if (laneName.toLowerCase().includes('músic') || laneName.toLowerCase().includes('áudio')) {
-            laneIcon = 'fa-music';
-        } else if (laneName.toLowerCase().includes('séri')) {
-            laneIcon = 'fa-tv';
+        if (currentCategory === 'Movie') {
+            filtered = allMediaItems.filter(it => !it.isSeries && it.type !== 'Audio' && !isBiblicalItem(it));
+            categoryTitle = "Filmes";
+        } else if (currentCategory === 'Series') {
+            filtered = allMediaItems.filter(it => it.isSeries && !isBiblicalItem(it));
+            categoryTitle = "Séries de TV";
+        } else if (currentCategory === 'Audio') {
+            filtered = allMediaItems.filter(it => it.type === 'Audio');
+            categoryTitle = "Músicas";
+        } else if (currentCategory === 'biblical_movies') {
+            filtered = allMediaItems.filter(it => !it.isSeries && it.type !== 'Audio' && isBiblicalItem(it));
+            categoryTitle = "Filmes Bíblicos";
+        } else if (currentCategory === 'biblical_series') {
+            filtered = allMediaItems.filter(it => it.isSeries && isBiblicalItem(it));
+            categoryTitle = "Séries Bíblicas";
         }
 
         let gridCardsHtml = '';
         filtered.forEach(it => {
             gridCardsHtml += `
-                <div class="media-card" onclick='openMediaDetail(${JSON.stringify(encodeURIComponent(JSON.stringify(it)))})'>
-                    <img src="${it.posterUrl}" class="card-poster" alt="${it.title}" loading="lazy">
-                    <span class="card-badge">${it.detailsSubtitle}</span>
+                <div class="media-card grid-style" onclick='openMediaDetail("${encodeURIComponent(JSON.stringify(it))}")'>
+                    <div class="poster-container">
+                        <img src="${it.posterUrl}" class="card-poster" alt="${it.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400'">
+                        <span class="card-badge">${it.detailsSubtitle}</span>
+                    </div>
                     <div class="card-info">
                         <div class="card-title">${it.title}</div>
                         <div class="card-meta">
@@ -393,40 +597,79 @@ function renderMediaRows() {
             `;
         });
 
-        laneElement.innerHTML = `
-            <div class="lane-header">
-                <i class="fa-solid ${laneIcon}"></i>
-                <h3>${laneName}</h3>
-            </div>
-            <div class="lane-grid">
-                ${gridCardsHtml}
+        const gridLayoutHtml = `
+            <div class="apk-category-layout">
+                <!-- Red back action banner matching visual APK patterns exactly -->
+                <div class="apk-grid-back-banner" onclick="switchCategory('all')">
+                    <div class="back-circle-red"><i class="fa-solid fa-arrow-left"></i></div>
+                    <div class="back-texts">
+                        <div class="back-title">Voltar ao Início</div>
+                        <div class="back-desc">Toque para retornar à página principal</div>
+                    </div>
+                </div>
+                
+                <div class="apk-grid-header-row">
+                    <div class="category-info-pills">
+                        <h2 class="apk-category-heading">${categoryTitle}</h2>
+                        <span class="apk-count-badge">1-${filtered.length} de ${filtered.length}</span>
+                    </div>
+                    <div class="apk-grid-controls">
+                        <i class="fa-solid fa-shuffle" onclick="playRandomFromGrid('${encodeURIComponent(JSON.stringify(filtered))}')" title="Reproduzir Aleatório" style="cursor: pointer; padding: 6px; color: var(--primary-cyan);"></i>
+                        <i class="fa-solid fa-border-all active" style="color: var(--primary-cyan);"></i>
+                        <i class="fa-solid fa-arrow-down-a-z" style="color: var(--text-muted);"></i>
+                    </div>
+                </div>
+
+                <div class="apk-vertical-grid">
+                    ${gridCardsHtml || `<div class="empty-category-notice" style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-folder-closed" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>Sua biblioteca local do Jellyfin não sincronizou arquivos nesta pasta bíblica específica. Para ver o conteúdo de demonstração, ative o Modo Demonstração no header.</div>`}
+                </div>
             </div>
         `;
-
-        libraryContainer.appendChild(laneElement);
+        
+        libraryContainer.innerHTML = gridLayoutHtml;
     }
+}
 
-    if (libraryContainer.innerHTML === '') {
-        libraryContainer.innerHTML = `
-            <div class="loading-state">
-                <i class="fa-solid fa-filter"></i>
-                <p>Nenhuma mídia encontrada com o filtro selecionado.</p>
-            </div>`;
+// Play random media item from within the current grid context
+window.playRandomFromGrid = function(encodedList) {
+    try {
+        const list = JSON.parse(decodeURIComponent(encodedList));
+        if (list && list.length > 0) {
+            const rand = list[Math.floor(Math.random() * list.length)];
+            startStreamPlayer(rand);
+        }
+    } catch (e) {
+        console.error("Rand play from grid failed:", e);
     }
+};
+
+// Periodic loop for showcase carousel rotation
+function startHeroCarousel() {
+    if (heroInterval) clearInterval(heroInterval);
+    currentHeroIndex = 0;
+    
+    // Choose movies or series to cycle as featured banners
+    const showable = allMediaItems.filter(it => it.type === 'Movie' || it.isSeries || it.type === 'Series');
+    if (showable.length === 0) return;
+    
+    heroInterval = setInterval(() => {
+        currentHeroIndex = (currentHeroIndex + 1) % showable.length;
+        setHeroBanner(showable[currentHeroIndex]);
+    }, 5000); // Rotates every 5 seconds passed in loop
 }
 
 // Switch categories filters
 window.switchCategory = function(category) {
     currentCategory = category;
     
-    // Manage CSS active states
+    // Manage CSS active states in header
     const navs = document.querySelectorAll('.nav-links a');
     navs.forEach(nav => {
         nav.classList.remove('active');
-        if (nav.innerText === 'Início' && category === 'all') nav.classList.add('active');
-        if (nav.innerText === 'Filmes' && category === 'Movie') nav.classList.add('active');
-        if (nav.innerText === 'Séries' && category === 'Series') nav.classList.add('active');
-        if (nav.innerText === 'Música' && category === 'Audio') nav.classList.add('active');
+        if (nav.innerText.trim() === 'Início' && category === 'all') nav.classList.add('active');
+        if (nav.innerText.trim() === 'Filmes' && category === 'Movie') nav.classList.add('active');
+        if (nav.innerText.trim() === 'Séries' && category === 'Series') nav.classList.add('active');
+        if (nav.innerText.trim() === 'Música' && category === 'Audio') nav.classList.add('active');
     });
 
     renderMediaRows();
@@ -767,6 +1010,10 @@ function openVideoOverlay(item) {
     const video = document.getElementById('mediaVideoPlayer');
     const playerLoader = document.getElementById('playerLoader');
 
+    // Remove any previous error fallback overlays
+    const oldFallback = document.getElementById('playerErrorFallback');
+    if (oldFallback) oldFallback.remove();
+
     document.getElementById('playerFooterTitle').innerText = item.title;
     document.getElementById('playerFooterSubtitle').innerText = `${item.detailsSubtitle} • ${item.genres}`;
 
@@ -781,8 +1028,34 @@ function openVideoOverlay(item) {
 
     video.onerror = () => {
         playerLoader.classList.add('hide');
-        alert("Não foi possível carregar a transmissão direta. Verifique suas conexões locais.");
-        closePlayerModal();
+        
+        // Render absolute direct stream fallback inside the video container
+        const urlStr = item.streamUrl || "";
+        const fallbackHtml = `
+            <div id="playerErrorFallback" style="position: absolute; inset: 0; background: #050508; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; color: white; z-index: 100; gap: 15px;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 50px; color: var(--primary-cyan); text-shadow: 0 0 15px rgba(0, 210, 255, 0.45);"></i>
+                <h3 style="font-size: 20px; font-weight: 800; color: white; letter-spacing: -0.5px;">Failsafe do Player Gflixnet</h3>
+                <p style="color: var(--text-muted); max-width: 500px; font-size: 13.5px; line-height: 1.5; margin: 0 auto;">
+                    O navegador bloqueou a reprodução direta. Isso acontece quando seu servidor Jellyfin (<span style="color: var(--primary-cyan);">${currentServerUrl}</span>) usa uma conexão insegura HTTP normal, e Gflixnet roda seguro em HTTPS (Bloqueio de Conteúdo Misto).
+                </p>
+                <p style="color: #FF9800; font-size: 12px; font-weight: 600; max-width: 450px; margin: 0 auto;">
+                    <i class="fa-solid fa-circle-info"></i> Não se preocupe! Você pode abrir e assistir essa transmissão diretamente na sua rede local em 1 clique:
+                </p>
+                <div style="display: flex; gap: 12px; margin-top: 10px; justify-content: center;">
+                    <a href="${urlStr}" target="_blank" class="btn btn-primary" onclick="window.closePlayerModal()" style="background: var(--primary-cyan); color: black; display: flex; align-items: center; gap: 8px; font-weight: 700; text-decoration: none; padding: 12px 24px; border-radius: 12px;">
+                        <i class="fa-solid fa-up-right-from-square"></i> Abrir em Nova Guia
+                    </a>
+                    <button class="btn btn-secondary" onclick="window.closePlayerModal()" style="padding: 12px 24px; border-radius: 12px;">Fechar</button>
+                </div>
+            </div>
+        `;
+        
+        const videoContainer = document.querySelector('.video-container');
+        if (videoContainer) {
+            const div = document.createElement('div');
+            div.innerHTML = fallbackHtml;
+            videoContainer.appendChild(div.firstElementChild);
+        }
     };
 
     // Handle play promise correctly to prevent UI locks on browser safety blockages
@@ -798,8 +1071,15 @@ function openVideoOverlay(item) {
 
 window.closePlayerModal = function() {
     const video = document.getElementById('mediaVideoPlayer');
-    video.pause();
-    video.src = '';
+    if (video) {
+        video.pause();
+        video.src = '';
+    }
+    
+    // Cleanup any lingering error panels on close to reset layout
+    const oldFallback = document.getElementById('playerErrorFallback');
+    if (oldFallback) oldFallback.remove();
+    
     closeModal('playerModal');
 };
 

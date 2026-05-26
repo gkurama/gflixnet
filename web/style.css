@@ -1340,3 +1340,376 @@ body {
     font-size: 14px;
     margin: 0 2px;
 }
+
+/* ========================================================== */
+/* APK startup opening animation / Splash screen (Abertura)    */
+/* ========================================================== */
+#apkSplashScreen {
+    position: fixed;
+    inset: 0;
+    background: #06060A;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    opacity: 1;
+    transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.splash-logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+    animation: splashScaleUp 1s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+.splash-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 54px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: white;
+    background: linear-gradient(135deg, var(--primary-cyan) 0%, var(--primary-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 35px rgba(0, 210, 255, 0.4);
+}
+
+.splash-logo .logo-g {
+    font-size: 64px;
+    font-weight: 900;
+}
+
+.splash-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+
+.splash-loader-bar {
+    width: 220px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.splash-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple));
+    border-radius: 99px;
+    animation: fillSplashProgress 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    box-shadow: 0 0 10px var(--primary-cyan);
+}
+
+.splash-status-text {
+    font-size: 12px;
+    color: #6C6C82;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    animation: pulseText 2s infinite ease-in-out;
+}
+
+@keyframes splashScaleUp {
+    0% { transform: scale(0.9); opacity: 0; filter: blur(10px); }
+    100% { transform: scale(1); opacity: 1; filter: blur(0); }
+}
+
+@keyframes fillSplashProgress {
+    0% { width: 0%; }
+    30% { width: 45%; }
+    70% { width: 85%; }
+    100% { width: 100%; }
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* ========================================================== */
+/* "O Meu Conteúdo" Biblical categories folders styled cards    */
+/* ========================================================== */
+.my-content-section {
+    margin-top: 10px;
+    margin-bottom: 35px;
+}
+
+.section-main-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.my-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.my-content-folder-card {
+    background: #0C0C14;
+    border: 2px solid rgba(0, 210, 255, 0.15); /* Sleek neon cyan border based on APK specs */
+    border-radius: 20px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.my-content-folder-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0, 210, 255, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.my-content-folder-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: var(--primary-cyan);
+    box-shadow: 0 10px 25px rgba(0, 210, 255, 0.25);
+}
+
+.my-content-folder-card:hover::before {
+    opacity: 1;
+}
+
+.folder-icon-glow {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(0, 210, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-cyan);
+    font-size: 26px;
+    margin-bottom: 16px;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.1) inset;
+    transition: transform 0.3s;
+}
+
+.my-content-folder-card:hover .folder-icon-glow {
+    transform: scale(1.1) rotate(5deg);
+    background: rgba(0, 210, 255, 0.16);
+    color: white;
+    box-shadow: 0 0 20px var(--primary-cyan);
+}
+
+.folder-label {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--primary-cyan);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+}
+
+.my-content-folder-card:hover .folder-label {
+    color: #FFFFFF;
+}
+
+/* ========================================================== */
+/* APK style catalog multi-column vertical grids & helpers    */
+/* ========================================================== */
+.apk-category-layout {
+    animation: fadeReveal 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+}
+
+@keyframes fadeReveal {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Red back action banner styled exactly like APK screenshots specifications */
+.apk-grid-back-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(229, 9, 20, 0.08); /* Transparent red card container */
+    border: 1.5px solid rgba(229, 9, 20, 0.25);
+    border-radius: 18px;
+    padding: 16px 20px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: all 0.2s ease-in-out;
+}
+
+.apk-grid-back-banner:hover {
+    background: rgba(229, 9, 20, 0.15);
+    border-color: var(--primary-red);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(229, 9, 20, 0.15);
+}
+
+.back-circle-red {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--primary-red); /* Glowing red button container matching screens! */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(229, 9, 20, 0.4);
+    flex-shrink: 0;
+}
+
+.back-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.back-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: white;
+}
+
+.back-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Category header details row */
+.apk-grid-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 16px;
+}
+
+.apk-category-heading {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: white;
+}
+
+.category-info-pills {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.apk-count-badge {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.apk-grid-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 18px;
+}
+
+.apk-grid-controls i {
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s, color 0.15s;
+}
+
+.apk-grid-controls i:hover {
+    transform: scale(1.15);
+}
+
+/* Responsive vertical catalog density grids - 3 Columns on handheld, dense rows on Desktop */
+.apk-vertical-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 25px;
+    padding-bottom: 40px;
+}
+
+.media-card.grid-style {
+    width: 100%;
+    flex: unset;
+    display: flex;
+    flex-direction: column;
+}
+
+.media-card.grid-style .poster-container {
+    width: 100%;
+    aspect-ratio: 2/3;
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #111116;
+}
+
+.media-card.grid-style .card-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.media-card.grid-style:hover .card-poster {
+    transform: scale(1.05);
+}
+
+@media(max-width: 768px) {
+    .apk-vertical-grid {
+        grid-template-columns: repeat(3, 1fr) !important; /* Forces 3 columns on mobile to mimic APK catalogs! */
+        gap: 12px;
+    }
+    
+    .media-card.grid-style .card-title {
+        font-size: 12px;
+    }
+    
+    .media-card.grid-style .card-meta {
+        font-size: 10px;
+    }
+    
+    .my-content-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+    
+    .my-content-folder-card {
+        padding: 20px 10px;
+    }
+    
+    .folder-icon-glow {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .folder-label {
+        font-size: 11px;
+    }
+}

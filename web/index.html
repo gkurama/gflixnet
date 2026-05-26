@@ -19,6 +19,18 @@
 </head>
 <body>
 
+    <!-- APK Opening Splash Screen (Abertura do APK) -->
+    <div id="apkSplashScreen">
+        <div class="splash-logo-container">
+            <div class="splash-logo"><span class="logo-g">g</span>flixnet</div>
+            <div class="splash-subtitle">Premium Mobile Cinema Hub</div>
+        </div>
+        <div class="splash-loader-bar">
+            <div class="splash-progress"></div>
+        </div>
+        <div class="splash-status-text">Iniciando Gflixnet, carregando bibliotecas locais...</div>
+    </div>
+
     <!-- Upper Control Bar / Header -->
     <header class="app-header">
         <div class="header-left">
@@ -68,6 +80,25 @@
                 <div class="hero-actions">
                     <button class="btn btn-primary" id="heroPlayBtn" onclick="playCurrentHero()"><i class="fa-solid fa-play"></i> Assistir Agora</button>
                     <button class="btn btn-secondary" id="heroDetailBtn" onclick="showCurrentHeroDetails()"><i class="fa-solid fa-circle-info"></i> Mais Informações</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- O Meu Conteúdo category folders section -->
+        <section class="my-content-section">
+            <h2 class="section-main-title">O meu conteúdo</h2>
+            <div class="my-content-grid">
+                <div class="my-content-folder-card" onclick="switchCategory('biblical_movies')">
+                    <div class="folder-icon-glow">
+                        <i class="fa-solid fa-book-bible"></i>
+                    </div>
+                    <span class="folder-label">FILMES BÍBLICOS</span>
+                </div>
+                <div class="my-content-folder-card" onclick="switchCategory('biblical_series')">
+                    <div class="folder-icon-glow">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <span class="folder-label">SÉRIES BÍBLICAS</span>
                 </div>
             </div>
         </section>
