@@ -9,7 +9,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Gflixnet">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/svg/jellyfin-icon-transparent.svg">
+    <link rel="apple-touch-icon" href="zimaos_logo.png">
+    <link rel="icon" type="image/png" href="zimaos_logo.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#08080C">
     <!-- FontAwesome icons -->
@@ -88,17 +89,44 @@
         <section class="my-content-section">
             <h2 class="section-main-title">O meu conteúdo</h2>
             <div class="my-content-grid">
-                <div class="my-content-folder-card" onclick="switchCategory('biblical_movies')">
-                    <div class="folder-icon-glow">
-                        <i class="fa-solid fa-book-bible"></i>
+                <div class="my-content-item-wrapper" onclick="switchCategory('Movie')">
+                    <div class="my-content-folder-card">
+                        <div class="folder-icon-glow">
+                            <i class="fa-solid fa-clapperboard"></i>
+                        </div>
+                        <span class="folder-label">FILMES</span>
                     </div>
-                    <span class="folder-label">FILMES BÍBLICOS</span>
+                    <div class="my-content-folder-subtitle">Filmes</div>
                 </div>
-                <div class="my-content-folder-card" onclick="switchCategory('biblical_series')">
-                    <div class="folder-icon-glow">
-                        <i class="fa-solid fa-layer-group"></i>
+                
+                <div class="my-content-item-wrapper" onclick="switchCategory('Series')">
+                    <div class="my-content-folder-card">
+                        <div class="folder-icon-glow">
+                            <i class="fa-solid fa-tv"></i>
+                        </div>
+                        <span class="folder-label">SÉRIES</span>
                     </div>
-                    <span class="folder-label">SÉRIES BÍBLICAS</span>
+                    <div class="my-content-folder-subtitle">Séries</div>
+                </div>
+
+                <div class="my-content-item-wrapper" onclick="switchCategory('biblical_movies')">
+                    <div class="my-content-folder-card">
+                        <div class="folder-icon-glow">
+                            <i class="fa-solid fa-book-bible"></i>
+                        </div>
+                        <span class="folder-label">FILMES BÍBLICOS</span>
+                    </div>
+                    <div class="my-content-folder-subtitle">Filmes Bíblicos</div>
+                </div>
+
+                <div class="my-content-item-wrapper" onclick="switchCategory('biblical_series')">
+                    <div class="my-content-folder-card">
+                        <div class="folder-icon-glow">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <span class="folder-label">SÉRIES BÍBLICAS</span>
+                    </div>
+                    <div class="my-content-folder-subtitle">Séries Bíblicas</div>
                 </div>
             </div>
         </section>

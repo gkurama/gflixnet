@@ -413,7 +413,7 @@ async function fetchAndRenderJellyfinLibrary() {
 
     try {
         // Fetch items recursive
-        const response = await fetch(`${currentServerUrl}/Users/${currentUserId}/Items?IncludeItemTypes=Movie,Series,Audio&Recursive=true&Fields=PrimaryImageAspectRatio,BasicSyncInfo,Overview,Genres,ProductionYear,RunTimeTicks,OfficialRating,Studios`, {
+        const response = await fetch(`${currentServerUrl}/Users/${currentUserId}/Items?IncludeItemTypes=Movie,Series,Audio&Recursive=true&Fields=PrimaryImageAspectRatio,BasicSyncInfo,Overview,Genres,ProductionYear,RunTimeTicks,OfficialRating,Studios,Path`, {
             headers: {
                 'X-Emby-Authorization': authHeader
             }
@@ -427,8 +427,9 @@ async function fetchAndRenderJellyfinLibrary() {
         
         // Map elements
         allMediaItems = data.Items.map(item => {
-            const isSeries = item.Type === "Series";
+            let isSeries = item.Type === "Series";
             const isAudio = item.Type === "Audio";
+            const pathStr = item.Path || "";
 
             let runtimeString = "N/A";
             if (item.RunTimeTicks) {
@@ -451,24 +452,69 @@ async function fetchAndRenderJellyfinLibrary() {
                 ? `${currentServerUrl}/Audio/${item.Id}/stream?static=true&api_key=${currentToken}`
                 : `${currentServerUrl}/Videos/${item.Id}/stream?static=true&api_key=${currentToken}`;
 
+            // Determine if the item path or context classifies this as Biblical or TV Series
+            const normPath = pathStr.toLowerCase();
+            let isBiblicalFinal = false;
+            let libraryNameFinal = isAudio ? "Músicas" : (isSeries ? "Séries de TV" : "Filmes recomendados");
+
+            // Look up physical folders configured inside ZimaOS Jellyfin
+            if (normPath.includes("filmes biblico") || normPath.includes("filmes bíb")) {
+                isBiblicalFinal = true;
+                isSeries = false;
+                libraryNameFinal = "Filmes Bíblicos";
+            } else if (normPath.includes("serie biblico") || normPath.includes("série bíb") || normPath.includes("séries bíb")) {
+                isBiblicalFinal = true;
+                isSeries = true;
+                libraryNameFinal = "Séries Bíblicas";
+            } else if (normPath.includes("/series") || normPath.includes("media/series")) {
+                isSeries = true;
+                isBiblicalFinal = false;
+                libraryNameFinal = "Séries de TV";
+            } else if (normPath.includes("/filme")) {
+                isSeries = false;
+                isBiblicalFinal = false;
+                libraryNameFinal = "Filmes recomendados";
+            } else {
+                // Fallback using isBiblicalItem helper for other paths
+                const checkBib = isBiblicalItem({
+                    title: item.Name,
+                    genres: item.Genres ? item.Genres.join(", ") : "",
+                    synopsis: item.Overview || "",
+                    libraryName: "",
+                    path: pathStr
+                });
+                if (checkBib) {
+                    isBiblicalFinal = true;
+                    if (isSeries) {
+                        libraryNameFinal = "Séries Bíblicas";
+                    } else {
+                        libraryNameFinal = "Filmes Bíblicos";
+                    }
+                }
+            }
+
+            const detailSubStr = isAudio ? "Música" : (isBiblicalFinal ? (isSeries ? "Série Bíblica" : "Filme Bíblico") : (isSeries ? "Série de TV" : "Filme"));
+
             return {
                 id: item.Id,
                 title: item.Name,
                 year: item.ProductionYear || 2024,
                 runtime: runtimeString,
                 isSeries: isSeries,
+                isBiblical: isBiblicalFinal,
                 type: item.Type,
-                detailsSubtitle: isAudio ? "Música" : (isSeries ? "Série de TV" : "Filme"),
+                detailsSubtitle: detailSubStr,
                 rating: item.OfficialRating || "Livre",
                 genres: item.Genres ? item.Genres.join(", ") : "Geral",
                 tags: isAudio ? "Jellyfin Audio" : "Jellyfin 1080p",
                 synopsis: item.Overview || "Mídia hospedada no seu servidor Jellyfin.",
                 director: item.Artists ? item.Artists.join(", ") : "Hospedagem Externa",
                 writers: "Jellyfin Core",
-                libraryName: isAudio ? "Músicas" : (isSeries ? "Séries de TV" : "Filmes"),
+                libraryName: libraryNameFinal,
                 posterUrl: posterUrl,
                 backdropUrl: backdropUrl,
-                streamUrl: streamUrl
+                streamUrl: streamUrl,
+                path: pathStr
             };
         });
 
@@ -509,11 +555,11 @@ function renderMediaRows() {
     if (currentCategory === 'all') {
         // Horizontal cinematic lanes grouped by type/thematic folders
         const lanes = {
-            "Filmes Bíblicos": allMediaItems.filter(it => !it.isSeries && it.type !== 'Audio' && isBiblicalItem(it)),
-            "Séries Bíblicas": allMediaItems.filter(it => it.isSeries && isBiblicalItem(it)),
-            "Filmes Recomendados": allMediaItems.filter(it => !it.isSeries && it.type !== 'Audio' && !isBiblicalItem(it)),
-            "Séries de TV": allMediaItems.filter(it => it.isSeries && !isBiblicalItem(it)),
-            "Músicas": allMediaItems.filter(it => it.type === 'Audio')
+            "Filmes recentes": allMediaItems.filter(it => !it.isSeries && it.type !== 'Audio' && !isBiblicalItem(it)),
+            "Séries recentes": allMediaItems.filter(it => it.isSeries && !isBiblicalItem(it)),
+            "Filmes Bíblicos recentes": allMediaItems.filter(it => !it.isSeries && it.type !== 'Audio' && isBiblicalItem(it)),
+            "Séries Bíblicas recentes": allMediaItems.filter(it => it.isSeries && isBiblicalItem(it)),
+            "Músicas recentes": allMediaItems.filter(it => it.type === 'Audio')
         };
 
         for (const laneName in lanes) {
@@ -527,6 +573,13 @@ function renderMediaRows() {
             if (laneName.includes('Músic')) laneIcon = 'fa-music';
             else if (laneName.includes('Séri')) laneIcon = 'fa-tv';
             else if (laneName.includes('Bíb')) laneIcon = 'fa-book-bible';
+
+            let targetCat = 'all';
+            if (laneName.includes('Filmes Bíblicos')) targetCat = 'biblical_movies';
+            else if (laneName.includes('Séries Bíblicas')) targetCat = 'biblical_series';
+            else if (laneName.includes('Filmes')) targetCat = 'Movie';
+            else if (laneName.includes('Séries')) targetCat = 'Series';
+            else if (laneName.includes('Músic')) targetCat = 'Audio';
 
             let gridCardsHtml = '';
             list.forEach(it => {
@@ -546,9 +599,11 @@ function renderMediaRows() {
             });
 
             laneElement.innerHTML = `
-                <div class="lane-header">
-                    <i class="fa-solid ${laneIcon}"></i>
-                    <h3>${laneName}</h3>
+                <div class="lane-header" onclick="switchCategory('${targetCat}')">
+                    <div class="lane-header-left">
+                        <i class="fa-solid ${laneIcon}"></i>
+                        <h3>${laneName} <span class="lane-chevron-symbol">&gt;</span></h3>
+                    </div>
                 </div>
                 <div class="lane-grid">
                     ${gridCardsHtml}
